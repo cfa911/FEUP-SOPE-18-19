@@ -5,28 +5,39 @@
 
 int main(int argc, int *argv[], int *envp[])
 {
-
-    struct stat fileStat; // information abo
     int fileIndex = argc - 1;
-    char type_s[4];
-    if (stat(argv[fileIndex], &fileStat) < 0)
+    FILE *pf;
+
+    struct stat fileStat;
+    if (stat(argv[1], &fileStat) < 0)
         return 1;
-    mode_t bits = fileStat.st_mode;
 
-    printf(argv[fileIndex]);
-    printf(argv[fileIndex]);
+    char command[20] = "file ";
+    //file_name,file_type,file_size,file_access,file_created_date,file_modification_date,md5,sha1,sha256
 
-    printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
-    printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
-    printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
-    printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
-    printf( (fileStat.st_mode & S_IRGRP) ? "r" : "-");
-    printf( (fileStat.st_mode & S_IWGRP) ? "w" : "-");
-    printf( (fileStat.st_mode & S_IXGRP) ? "x" : "-");
-    printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
-    printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
-    printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
+    strcat(command, argv[fileIndex]);
 
+    // Setup our pipe for reading and execute our command.
+    pf = popen(command, "r");
+    char data[512];
+    // Error handling
+
+    // Get the data from the process execution
+    fgets(data, 512, pf);
+
+    printf(data);
+
+    printf((S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+    printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
+    printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
+    printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
+    printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
+    printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
+    printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
+    printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
+    printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
+    printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
+    /*
     switch (bits)
     {
 
@@ -43,7 +54,7 @@ int main(int argc, int *argv[], int *envp[])
     case S_IWOTH: // others have write permission
     case S_IXOTH: // others have execute permission
         break;
-    }
-    //file_name,file_type,file_size,file_access,file_created_date,file_modification_date,md5,sha1,sha256
+    }*/
+
     return 0;
 }
