@@ -6,7 +6,6 @@
 #include <time.h>
 #include <fcntl.h>
 
-
 /*
     char text[1000];
     FILE *fp=fopen("filename", "r");
@@ -15,7 +14,6 @@
     text[i++] = fgetc(fp);
     text[i]='\0';
 */
-
 
 int main(int argc, char **argv, char *envp[])
 {
@@ -64,8 +62,8 @@ int main(int argc, char **argv, char *envp[])
         if (strcmp(argv[i], "-o") == 0)
         {
             writeToFile = 1; //set to true
-            fd = open(argv[++i],O_RDWR | O_TRUNC | O_CREAT,S_IRUSR | S_IRGRP | S_IROTH);
-            dup2(fd,STDOUT_FILENO);
+            fd = open(argv[++i], O_RDWR | O_TRUNC | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH);
+            dup2(fd, STDOUT_FILENO);
             break;
         }
     }
@@ -76,11 +74,12 @@ int main(int argc, char **argv, char *envp[])
 
     // Setup our pipe for reading and execute our command.
     commandFile = popen(command, "r");
-    char data[512];
+    char data[80];
     // Error handling
 
     // Get the data from the process execution
-    fgets(data, 512, commandFile);
+    fgets(data, 80, commandFile);
+    pclose(commandFile);
 
     if (stat(argv[fileIndex], &fileStat) < 0)
         return 1;
@@ -89,52 +88,53 @@ int main(int argc, char **argv, char *envp[])
 
     printf("---------------------------\n");
     //puts(data);
-    fputs(data, stdout);
+    printf("%s", data);
 
     //do hashing
-    char command2[512] = "";
-    char data2[512];
-
+    char command2[80] = "";
+    char data2[80];
     if (hashActivated == 1 && (md5 || sha1 || sha256))
     {
-        
+
         if (md5)
         {
-            
+
             write(STDOUT_FILENO, ",", 2);
             char code[8] = "md5sum ";
-            strcat(command2,code);
+
+            strcat(command2, code);
             strcat(command2, argv[fileIndex]);
             commandHash = popen(command2, "r");
-            
-            fgets(data2, 512, commandHash);
-            fputs(data2, stdout);
+            fgets(data2, 80, commandHash);
+            printf("%s", data2);
         }
         if (sha1)
         {
-            memset(command2, 0, sizeof command2);
-            memset(data2, 0, sizeof data2);
             write(STDOUT_FILENO, ",", 2);
             char code[9] = "sha1sum ";
-            strcat(command2,code);
+            memset(command2, 0, sizeof command2);
+            memset(data2, 0, sizeof data2);
+            strcat(command2, code);
             strcat(command2, argv[fileIndex]);
             commandHash = popen(command2, "r");
-            fgets(data2, 512, commandHash);
-            fputs(data2, stdout);
+            fgets(data2, 80, commandHash);
+            printf("%s", data2);
         }
         if (sha256)
         {
-            memset(command2, 0, sizeof command2);
-            memset(data2, 0, sizeof data2);
+
             write(STDOUT_FILENO, ",", 2);
             char code[11] = "sha256sum ";
-            strcat(command2,code);
+            memset(command2, 0, sizeof command2);
+            memset(data2, 0, sizeof data2);
+            strcat(command2, code);
             strcat(command2, argv[fileIndex]);
             commandHash = popen(command2, "r");
-            fgets(data2, 512, commandHash);
-            fputs(data2, stdout);
+            fgets(data2, 80, commandHash);
+            printf("%s", data2);
         }
     }
+    pclose(commandHash);
     write(STDOUT_FILENO, "Filesize: ", 11);
     printf("%d bytes\n", (int)fileStat.st_size);
 
