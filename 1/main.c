@@ -4,10 +4,23 @@
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
+#include <fcntl.h>
+
+
+/*
+    char text[1000];
+    FILE *fp=fopen("filename", "r");
+    int i=0;
+    while(feof(fp))
+    text[i++] = fgetc(fp);
+    text[i]='\0';
+*/
+
 
 int main(int argc, char **argv, char *envp[])
 {
     int fileIndex = argc - 1;
+    int fd;
     FILE *commandFile, *commandHash;
     struct stat fileStat;
 
@@ -46,6 +59,16 @@ int main(int argc, char **argv, char *envp[])
         }
     }
 
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-o") == 0)
+        {
+            writeToFile = 1; //set to true
+            fd = open(argv[++i],O_RDWR | O_TRUNC | O_CREAT,S_IRUSR | S_IRGRP | S_IROTH);
+            dup2(fd,STDOUT_FILENO);
+            break;
+        }
+    }
     char command[512] = "file ";
     //file_name,file_type,file_size,file_access,file_created_date,file_modification_date,md5,sha1,sha256
 
@@ -69,7 +92,7 @@ int main(int argc, char **argv, char *envp[])
     fputs(data, stdout);
 
     //do hashing
-    char command2[512];
+    char command2[512] = "";
     char data2[512];
 
     if (hashActivated == 1 && (md5 || sha1 || sha256))
@@ -83,11 +106,35 @@ int main(int argc, char **argv, char *envp[])
             strcat(command2,code);
             strcat(command2, argv[fileIndex]);
             commandHash = popen(command2, "r");
+            
+            fgets(data2, 512, commandHash);
+            fputs(data2, stdout);
+        }
+        if (sha1)
+        {
+            memset(command2, 0, sizeof command2);
+            memset(data2, 0, sizeof data2);
+            write(STDOUT_FILENO, ",", 2);
+            char code[9] = "sha1sum ";
+            strcat(command2,code);
+            strcat(command2, argv[fileIndex]);
+            commandHash = popen(command2, "r");
+            fgets(data2, 512, commandHash);
+            fputs(data2, stdout);
+        }
+        if (sha256)
+        {
+            memset(command2, 0, sizeof command2);
+            memset(data2, 0, sizeof data2);
+            write(STDOUT_FILENO, ",", 2);
+            char code[11] = "sha256sum ";
+            strcat(command2,code);
+            strcat(command2, argv[fileIndex]);
+            commandHash = popen(command2, "r");
             fgets(data2, 512, commandHash);
             fputs(data2, stdout);
         }
     }
-
     write(STDOUT_FILENO, "Filesize: ", 11);
     printf("%d bytes\n", (int)fileStat.st_size);
 
