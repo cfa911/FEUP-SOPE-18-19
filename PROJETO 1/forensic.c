@@ -138,8 +138,7 @@ void searchDir(char* name){
 		          strcpy(path, new_str2);
 		            current_dir = opendir(path);
      }
-     int status;
-     //waitpid(pid,&status,WNOHANG);
+
 		}
        else if (strcmp(directory_info->d_name, ".") != 0 && strcmp(directory_info->d_name, "..") != 0 && directory_info->d_type != DT_DIR) {
           char * new_str;
@@ -202,17 +201,8 @@ int main(int argc, char **argv, char *envp[]){
         }
     }
 
-    for (int i = 0; i < argc; i++)
-    {
-        if (strcmp(argv[i], "-o") == 0)
-        {
-            writeToFile = 1; //set to true
-            fd = open(argv[++i], O_RDWR | O_TRUNC | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH);
-            dup2(fd, STDOUT_FILENO);
-            break;
-        }
-    }
     char command[512] = "file ";
+    //file_name,file_type,file_size,file_access,file_created_date,file_modification_date,md5,sha1,sha256
 
     strcat(command, argv[fileIndex]); // file + filename
 
@@ -222,17 +212,11 @@ int main(int argc, char **argv, char *envp[]){
     // Error handling
 
     // Get the data from the process execution
-    pclose(commandFile);
     fgets(data, 80, commandFile);
+    pclose(commandFile);
 
     if (stat(argv[fileIndex], &fileStat) < 0)
         return 1;
-
-    printf("Information for %s\n", argv[fileIndex]);
-
-    printf("---------------------------\n");
-    //puts(data);
-    printf("%s", data);
 
     //do hashing
     char command2[80] = "";
@@ -277,23 +261,9 @@ int main(int argc, char **argv, char *envp[]){
             fgets(data2, 80, commandHash);
             printf("%s", data2);
         }
+         pclose(commandHash);
     }
-    pclose(commandHash);
-    write(STDOUT_FILENO, "Filesize: ", 11);
-    printf("%d bytes\n", (int)fileStat.st_size);
 
-        if (sha256){
-            memset(command2, 0, sizeof command2);
-            memset(data2, 0, sizeof data2);
-            write(STDOUT_FILENO, ",", 2);
-            char code[11] = "sha256sum ";
-            strcat(command2, code);
-        }
 
-        strcat(command2, argv[fileIndex]);
-        commandHash = popen(command2, "r");
-        fgets(data2, 512, commandHash);
-        printf(data2);
-    }
     return 0;
 }
