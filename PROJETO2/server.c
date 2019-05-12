@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "server.h"
 #include "constants.h"
+#include "types.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,10 +24,16 @@ int main(int argc, char * argv[]) {
   }
 
   // CRIAR CONTA ADMINISTRADOR
-  //BLA
-  //BLA
-  //BLA
+  bank_account_t admin_account;
+  admin_account.account_id = ADMIN_ACCOUNT_ID;
+  admin_account.balance = 0;
+  admin_account.admin = 1;
 
+  struct bank_account * bank_accounts = malloc(100 * sizeof(struct bank_account));
+
+  bank_accounts = &admin_account;
+
+  //criar fifo secure_srv
   if(mkfifo("secure_srv", S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0) {
         fprintf(stderr, "Error creating secure_srv fifo\n");
         return -3;
