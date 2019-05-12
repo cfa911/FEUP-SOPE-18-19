@@ -3,6 +3,4 @@
 
 void print_usage(FILE * stream, char * progname);
 
-int listen_for_securesrv();
-
 #endif  // _SERVER_H_
