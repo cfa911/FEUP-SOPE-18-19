@@ -3,7 +3,6 @@
 #include "constants.h"
 #include "types.h"
 #include <sys/types.h>
-#include <pthread.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -11,9 +10,6 @@
 #include <pthread.h>
 #include <string.h>
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 
 int main(int argc, char * argv[]) {
 
@@ -32,6 +28,8 @@ int main(int argc, char * argv[]) {
   req_create_account_t admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
+
+  //sha256
   strcpy(admin_account.password, argv[2]);
 
   struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account));
@@ -53,9 +51,6 @@ int main(int argc, char * argv[]) {
 
     close(fd);
     remove("secure_srv");
-    pthread_mutex_destroy(&mutex);
-    pthread_mutex_destroy(&mutex2);
-    pthread_mutex_destroy(&mutex3);
 
      return 0;
 }
