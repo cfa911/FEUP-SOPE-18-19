@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 
 
 int main(int argc, char * argv[]) {
@@ -24,14 +25,14 @@ int main(int argc, char * argv[]) {
   }
 
   // CRIAR CONTA ADMINISTRADOR
-  bank_account_t admin_account;
+  req_create_account_t admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
-  admin_account.admin = 1;
+//  stcpy(admin_account.password, &argv[2]); como é que isto se faz ?????????????????????
 
-  struct bank_account * bank_accounts = malloc(100 * sizeof(struct bank_account));
+  struct req_create_account * accounts = malloc(100 * sizeof(struct req_create_account));
 
-  bank_accounts = &admin_account;
+  accounts = &admin_account;
 
   //criar fifo secure_srv
   if(mkfifo("secure_srv", S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0) {
