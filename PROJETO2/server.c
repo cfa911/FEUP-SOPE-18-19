@@ -32,9 +32,9 @@ int main(int argc, char * argv[]) {
   req_create_account_t admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
-  strcpy(admin_account.password, &argv[2]);
+  strcpy(admin_account.password, argv[2]);
 
-  struct req_create_account * accounts = malloc(100 * sizeof(struct req_create_account));
+  struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account));
 
   accounts = &admin_account;
 
@@ -51,7 +51,7 @@ int main(int argc, char * argv[]) {
      return -1;
   }
 
-    close("fd");
+    close(fd);
     remove("secure_srv");
     pthread_mutex_destroy(&mutex);
     pthread_mutex_destroy(&mutex2);

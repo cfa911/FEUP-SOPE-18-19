@@ -18,7 +18,7 @@
 // 3 - encerramento do servidor
 
 
-int main(int argc, char * argv[]) {
+int main(int argc, char* argv[]) {
 
   if (argc != 6) {
           printf("Wrong number of arguments\n");
