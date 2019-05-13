@@ -57,3 +57,29 @@ int main(int argc, char * argv[]) {
 void print_usage(FILE * stream, char * progname) {
     fprintf(stream, "usage: %s <nr_bank_offices_to_create> <password>\n", progname);
 }
+
+void createAccount(){
+
+int id, balance;
+char[MAX_PASSWORD_LEN] password;
+
+printf("Insert your id account: ");
+id = scanf("%d", &id);
+
+// VER SE ID JÁ ESTÁ A SER USADO POR OUTRA CONTA !!!!!!!!!!!
+
+if(id >= 1 || id <= MAX_BANK_ACCOUNTS){
+
+  printf("Insert your initial balance for the account: ");
+  balance = scanf("%d", &balance);
+
+  if(balance >= MIN_BALANCE || balance <= MAX_BALANCE){
+
+  printf("Insert your password account: ");
+  password = scanf("%s", password);
+
+  }
+}
+
+
+}
