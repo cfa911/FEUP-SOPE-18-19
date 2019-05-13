@@ -26,20 +26,20 @@ int main(int argc, char * argv[]) {
           return -1;
       }
 
-  switch(argv[4]){
-    case 0:
-    //createAccount();
-    break;
-    case 1:
-    //funcao para consulta de saldo
-    break;
-    case 2:
-    //funcao realizacao de transferencias
-    break;
-    case 3:
-    //funcao para encerramento do servidor
-    break;
-  }
+  // switch(argv[4]){
+  //   case 0:
+  //   //createAccount();
+  //   break;
+  //   case 1:
+  //   //funcao para consulta de saldo
+  //   break;
+  //   case 2:
+  //   //funcao realizacao de transferencias
+  //   break;
+  //   case 3:
+  //   //funcao para encerramento do servidor
+  //   break;
+  // }
 }
 
 
