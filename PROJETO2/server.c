@@ -61,7 +61,7 @@ void print_usage(FILE * stream, char * progname) {
 void createAccount(){
 
 int id, balance;
-char[MAX_PASSWORD_LEN] password;
+char password[20];
 
 printf("Insert your id account: ");
 id = scanf("%d", &id);
@@ -76,7 +76,7 @@ if(id >= 1 || id <= MAX_BANK_ACCOUNTS){
   if(balance >= MIN_BALANCE || balance <= MAX_BALANCE){
 
   printf("Insert your password account: ");
-  password = scanf("%s", password);
+  scanf("%s", password);
 
   }
 }
