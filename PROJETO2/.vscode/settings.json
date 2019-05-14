@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "thread_function.h": "c"
+        "thread_function.h": "c",
+        "constants.h": "c"
     }
 }

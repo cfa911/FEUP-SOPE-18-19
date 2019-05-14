@@ -11,9 +11,11 @@
 #include <pthread.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 int main(int argc, char *argv[])
 {
+  srand(time(NULL)); //Randomize time
   FILE *commandHash;
   // CHAIN OF REQUIREMENTS
   if (argc != 3)
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
 
 
 
-  struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account)); // creates memory for accounts
+  struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct bank_account)); // creates memory for accounts
 
   accounts = &admin_account;
 
@@ -106,7 +108,6 @@ int main(int argc, char *argv[])
       exit(1);
     }
     threads[i] = tid;
-    /* code */
   }
 
   for (size_t i = 0; i < atoi(argv[1]); i++) // Waits for threads/balcoes eletronicos
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
   }
-
+  getchar();
   close(fd);
   remove(SERVER_FIFO_PATH);
   return 0;
