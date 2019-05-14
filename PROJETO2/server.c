@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     pthread_t tid;
     if (pthread_create(&tid, NULL, thread_function, &i) != 0)
     {
-      printf("Error creating electronic offices");
+      printf("Error creating bank offices");
       exit(1);
     }
     threads[i] = tid;
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
   {
     if (pthread_join(threads[i], NULL) != 0)
     {
-      printf("Error waiting for electronic offices");
+      printf("Error waiting for bank offices");
       exit(1);
     }
   }
