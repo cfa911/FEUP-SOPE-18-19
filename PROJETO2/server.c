@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include "thread_function.h"
 
 int main(int argc, char *argv[])
 {
@@ -58,9 +59,7 @@ int main(int argc, char *argv[])
   fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
   //printf("%s\n", output); //prints hash
 
-
-
-  strcpy(admin_account.password, output);//output is hashed password
+  strcpy(admin_account.password, output); //output is hashed password
 
   struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account)); // creates memory for accounts
 
@@ -81,6 +80,30 @@ int main(int argc, char *argv[])
     return -1;
   }
   getchar();
+
+  pthread_t threads[MAX_BANK_OFFICES];
+  for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
+  {
+    pthread_t tid;
+    if (pthread_create(&tid, NULL, thread_function, &i) != 0)
+    {
+      printf("Error creating electronic offices");
+      exit(1);
+    }
+    threads[i] = tid;
+    /* code */
+  }
+
+ for (size_t i = 0; i < atoi(argv[1]); i++) // Waits for threads/balcoes eletronicos
+  {
+    pthread_t tid;
+    if (pthread_join(threads[i],NULL) != 0)
+    {
+      printf("Error waiting for electronic offices");
+      exit(1);
+    }
+  }
+  
   close(fd);
   remove(SERVER_FIFO_PATH);
 
