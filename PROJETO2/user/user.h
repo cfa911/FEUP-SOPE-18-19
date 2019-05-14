@@ -2,6 +2,6 @@
 #define _USER_H_
 
 void print_usage(FILE * stream, char * progname);
-int write_to_ulog(char* status);
+void create_account(char *args);
 
 #endif  // _USER_H_
