@@ -31,14 +31,15 @@ int main(int argc, char* argv[]) {
   int pid = getpid();
   printf("** Running process %d **  \n", pid);
 
-  int secure_srv = open("secure_srv", O_RDWR);
+  /*int secure_srv = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
 
-  if(secure_srv == -1){
+  if(secure_srv < 0){
    printf("Error opening secure_srv FIFO\n");
    return -3;
-  }
+  }*/
 
   char sn[20];
+  printf("abort12543534?");
   //sprintf(sn, "secure_%d", pid);
   printf("abort?");
 
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]) {
     write_to_ulog(msg);
 
   close(status);
-  close(secure_srv);
+  //close(secure_srv);
 
   remove(sn);
 

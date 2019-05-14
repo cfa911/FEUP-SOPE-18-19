@@ -25,12 +25,12 @@ int main(int argc, char *argv[])
     printf("Number of bank offices is too high\n");
     return -2;
   }
-  else if (strlen(argv[1]) < 8)
+  else if (strlen(argv[2]) < MIN_PASSWORD_LEN)
   {
     printf("Password too short\n");
     return -3;
   }
-  else if (strlen(argv[1]) > 20)
+  else if (strlen(argv[2]) > MAX_PASSWORD_LEN)
   {
     printf("Password too long\n");
     return -3;
@@ -44,45 +44,45 @@ int main(int argc, char *argv[])
   //sha256
   //echo password | sha256sum > sumfile
   char filename[10];
-  char result[3];
+  char result[WIDTH_ID];
   char code[30] = "echo -n ";
-  char output[64];
+  char output[HASH_LEN];
   sprintf(result, "%i", ADMIN_ACCOUNT_ID); //future iterations change ADMIN_ACCOUNT_ID to any ID
 
-  strcat(code, argv[1]);
+  strcat(code, argv[2]);
   strcat(code, " | sha256sum");
 
   //printf("%s\n",code);  //prints code
 
   commandHash = popen(code, "r");
-  fgets(output, 65, commandHash); //read 64 bytes
+  fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
   //printf("%s\n", output); //prints hash
 
 
 
-  strcpy(admin_account.password, argv[2]);
+  strcpy(admin_account.password, output);//output is hashed password
 
-  struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account));
+  struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account)); // creates memory for accounts
 
   accounts = &admin_account;
 
   //criar fifo secure_srv
-  if (mkfifo("secure_srv", S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0)
+  if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
   {
     fprintf(stderr, "Error creating secure_srv fifo\n");
     return -3;
   }
 
-  int fd = open("secure_srv", O_RDONLY | O_NONBLOCK);
+  int fd = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
 
   if (fd == -1)
   {
     printf("Error opening FIFO\n");
     return -1;
   }
-
+  getchar();
   close(fd);
-  remove("secure_srv");
+  remove(SERVER_FIFO_PATH);
 
   return 0;
 }
