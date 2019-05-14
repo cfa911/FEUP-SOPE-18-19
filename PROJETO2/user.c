@@ -29,12 +29,7 @@ int main(int argc, char* argv[]) {
       }
 
   int pid = getpid();
-  printf("** Running process %d **\n", pid, getpgrp());
-
-  if(mkfifo("secure_srv", S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0) {
-        fprintf(stderr, "Error creating secure_srv fifo\n");
-        return -3;
-  }
+  printf("** Running process %d **  \n", pid);
 
   int secure_srv = open("secure_srv", O_RDWR);
 
@@ -43,15 +38,16 @@ int main(int argc, char* argv[]) {
    return -3;
   }
 
-  char sn[12];
-  sprintf(sn, "secure_%d", pid);
+  char sn[20];
+  //sprintf(sn, "secure_%d", pid);
+  printf("abort?");
 
-  if(mkfifo(sn, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) == -1){
-    printf("Error creating status FIFO\n");
+  if(mkfifo(sn, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0){
+    fprintf(stderr, "Error creating secure_srv fifo\n");
     return -1;
   }
-printf("2fuck");
-  int status = open(sn, O_RDWR );
+
+  int status = open(sn, O_RDWR | O_NONBLOCK );
 
   if(status == -1){
    printf("Error opening status FIFO\n");
