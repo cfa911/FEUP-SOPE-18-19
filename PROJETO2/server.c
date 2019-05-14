@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   commandHash = popen(code, "r");
   fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
   strcpy(admin_account.hash, output); //output is hashed password
-  strcpy(admin_account.salt, salt); //output is hashed password
+  strcpy(admin_account.salt, salt); //the Salt
 
   printf("%s\n",output);
 

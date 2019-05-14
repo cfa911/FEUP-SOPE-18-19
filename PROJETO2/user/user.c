@@ -77,11 +77,14 @@ void create_account(char *args)
 
   char *tmp_str;
   tmp_str = strtok(args, " "); //1st element
+  printf("%s\n",tmp_str);
+
   request_create_account.account_id = atoi(tmp_str);
+  tmp_str = strtok(NULL, " ");
   while (tmp_str != NULL)
   {
-    tmp_str = strtok(NULL, " "); //2st & 3rd element
-
+    
+    printf("%s\n",tmp_str);
     if (i == 0)
     {
       request_create_account.balance = atoi(tmp_str);
@@ -95,6 +98,7 @@ void create_account(char *args)
       perror("FAIL TOO MANY ARGUMENTS\n");
       exit(1);
     }
+    tmp_str = strtok(NULL, " ");
     i++;
   }
   if (i != 2)
