@@ -29,14 +29,14 @@ int main(int argc, char *argv[])
   }
 
   int pid = getpid();
-  printf("Pid del processio %i\n", pid);
+  printf("Process pid %i\n", pid);
   int fifo_server = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
   if (fifo_server < 0)
   {
     perror("Error: Failed to open fifo\n");
     exit(0);
   }
-  sprintf(pid_string, "%i", pid); //future iterations change ADMIN_ACCOUNT_ID to any ID
+  sprintf(pid_string, "%i", pid);
   strcat(fifo_user, pid_string);
   if (mkfifo(fifo_user, 0660) != 0)
   {
@@ -49,13 +49,15 @@ int main(int argc, char *argv[])
   switch (atoi(argv[4]))
   {
   case 0:
-    create_account(argv[5]);
+    create_account(argv[5], argv[1], argv[2]);
     break;
   case 1:
+    check_balance(argv[1], argv[2]);
     break;
   case 2:
     break;
   case 3:
+    shutdown_server(argv[1], argv[2]);
     break;
   default:
     break;
@@ -68,43 +70,100 @@ int main(int argc, char *argv[])
 void print_usage(FILE *stream, char *progname)
 {
   fprintf(stream, "usage: %s <account_id> <password> <delay> <code> <list>\n", progname);
+  printf("\nCode of operacoes:\n");
+  printf("0 - Account creation\n");
+  printf("1 - Credit check\n");
+  printf("2 - Make a transfer\n");
+  printf("3 - Shutdown server\n\n");
 }
 
-void create_account(char *args)
+void create_account(char *args, char *admin_id, char *admin_password) //0
 {
   int i = 0;
-  req_create_account_t request_create_account;
-
   char *tmp_str;
+
+  if (strcmp(admin_id, "0") != 0)
+  {
+    perror("Error: Not Admin!! Can't create accounts\n");
+    exit(1);
+  }
+
+  //search and validade admin
+
+  req_create_account_t request_create_account;
   tmp_str = strtok(args, " "); //1st element
-  printf("%s\n",tmp_str);
 
   request_create_account.account_id = atoi(tmp_str);
   tmp_str = strtok(NULL, " ");
   while (tmp_str != NULL)
   {
-    
-    printf("%s\n",tmp_str);
+
     if (i == 0)
     {
       request_create_account.balance = atoi(tmp_str);
+      //2nd element
     }
     else if (i == 1)
     {
       strcat(request_create_account.password, tmp_str);
+      //3rd element
     }
     else
     {
-      perror("FAIL TOO MANY ARGUMENTS\n");
-      exit(1);
+      perror("ERROR: TOO MANY ARGUMENTS ON ACCOUNT CREATION\n");
+      exit(3);
     }
     tmp_str = strtok(NULL, " ");
     i++;
   }
   if (i != 2)
   {
-    perror("FAIL TOO LITTLE ARGUMENTS\n");
+    perror("ERROR: TOO LITTLE ARGUMENTS ON ACCOUNT CREATION\n");
+    exit(4);
+  }
+  // Make request to server and send the struct
+}
+void check_balance(char *user, char *password)
+{ //1
+  //if validade user;
+}
+void make_transfer(char *user, char *password)
+{ //2
+  //if validade user 1;
+
+  char *tmp_str;
+  int user2_id;
+  int amount = 0;
+  tmp_str = strtok(NULL, " ");
+  user2_id = atoi(tmp_str);
+  if (tmp_str != NULL)
+  {
+    tmp_str = strtok(NULL, " ");
+    amount = atoi(tmp_str);
+    if (amount <= 0)
+    {
+      perror("Error: Negative amount! Invalid transfer!\n");
+      exit(0);
+    }
+  }
+  else
+  {
+    perror("Error: Empty Recipient! Can't conclude transfer\n");
+    exit(0);
+  }
+
+  //if validade user 2;
+  req_transfer_t transfer;
+  // Make request to server and send the struct
+}
+
+void shutdown_server(char *admin, char *password)
+{ //3
+  //if validade user;
+  if (atoi(admin) != ADMIN_ACCOUNT_ID)
+  {
+    perror("ERROR: No permission for this operation");
     exit(1);
   }
-  // call thread and send struct
+  // send remove(secure_srv) to thread
 }
