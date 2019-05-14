@@ -37,7 +37,7 @@ int main(int argc, char * argv[]) {
   accounts = &admin_account;
 
   //criar fifo secure_srv
-  if(mkfifo("secure_srv", S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) != 0) {
+  if(mkfifo("secure_srv", 0660) != 0) {
         fprintf(stderr, "Error creating secure_srv fifo\n");
         return -3;
   }
