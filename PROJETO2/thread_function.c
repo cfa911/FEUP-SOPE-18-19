@@ -3,6 +3,6 @@
 
 
 void * thread_function(void * arg){
-    printf("thread id: %id\n", *((int *)arg));
+    printf("thread id: %i\n", *((int *)arg));
     return NULL;
 }

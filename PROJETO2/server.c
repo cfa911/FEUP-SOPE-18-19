@@ -2,6 +2,7 @@
 #include "server.h"
 #include "constants.h"
 #include "types.h"
+#include "thread_function.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -9,7 +10,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
-#include "thread_function.h"
+#include <math.h>
 
 int main(int argc, char *argv[])
 {
@@ -38,30 +39,45 @@ int main(int argc, char *argv[])
   }
 
   // CRIAR CONTA ADMINISTRADOR
-  req_create_account_t admin_account;
+  bank_account_t admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
 
+
+  //GENERATE SALT
+  int MAX_NUMBER = pow(2,30);
+  int salt_number = rand() % MAX_NUMBER + 1;
+
+
+  printf("%i\n",salt_number);
+
   //sha256
-  //echo password | sha256sum > sumfile
-  char filename[10];
+  //echo -n "password""salt" | sha256sum
   char result[WIDTH_ID];
+  char salt[SALT_LEN+1];
   char code[30] = "echo -n ";
-  char output[HASH_LEN];
+  char output[HASH_LEN+1];
   sprintf(result, "%i", ADMIN_ACCOUNT_ID); //future iterations change ADMIN_ACCOUNT_ID to any ID
+  sprintf(salt, "%i", salt_number);
 
-  strcat(code, argv[2]);
+
+  strcat(code, argv[2]); // password
+  strcat(code, " ");
+  strcat(code, salt);//salt
   strcat(code, " | sha256sum");
-
-  //printf("%s\n",code);  //prints code
-
   commandHash = popen(code, "r");
   fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
-  //printf("%s\n", output); //prints hash
+  strcpy(admin_account.hash, output); //output is hashed password
+  strcpy(admin_account.salt, salt); //output is hashed password
 
-  strcpy(admin_account.password, output); //output is hashed password
+  printf("%s\n",output);
 
-  struct req_create_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account)); // creates memory for accounts
+
+
+
+
+
+  struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct req_create_account)); // creates memory for accounts
 
   accounts = &admin_account;
 
@@ -79,7 +95,6 @@ int main(int argc, char *argv[])
     printf("Error opening FIFO\n");
     return -1;
   }
-  getchar();
 
   pthread_t threads[MAX_BANK_OFFICES];
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
@@ -94,19 +109,17 @@ int main(int argc, char *argv[])
     /* code */
   }
 
- for (size_t i = 0; i < atoi(argv[1]); i++) // Waits for threads/balcoes eletronicos
+  for (size_t i = 0; i < atoi(argv[1]); i++) // Waits for threads/balcoes eletronicos
   {
-    pthread_t tid;
-    if (pthread_join(threads[i],NULL) != 0)
+    if (pthread_join(threads[i], NULL) != 0)
     {
       printf("Error waiting for electronic offices");
       exit(1);
     }
   }
-  
+
   close(fd);
   remove(SERVER_FIFO_PATH);
-
   return 0;
 }
 
