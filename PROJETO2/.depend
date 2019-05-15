@@ -1,5 +1,6 @@
 #MAKE .DEPEND FILE
 log.o: log.c sope.h constants.h types.h
+server.o: server.c server.h constants.h types.h thread_function.h
 account.o: account.c types.h constants.h
 thread_function.o: thread_function.c thread_function.h
-server.o: server.c server.h constants.h types.h thread_function.h
+semaphores.o: semaphores.c server.h constants.h types.h thread_function.h

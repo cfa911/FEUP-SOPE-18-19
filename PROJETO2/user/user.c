@@ -19,7 +19,7 @@
 int main(int argc, char *argv[])
 {
   char pid_string[6];
-  char fifo_user[20] = "secure_";
+  char USER_FIFO_PATH[USER_FIFO_PATH_LEN] = "/tmp/secure_";
 
   if (argc != 6)
   {
@@ -30,40 +30,53 @@ int main(int argc, char *argv[])
 
   int pid = getpid();
   printf("Process pid %i\n", pid);
+
   int fifo_server = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
+
+
   if (fifo_server < 0)
   {
     perror("Error: Failed to open fifo\n");
     exit(0);
   }
   sprintf(pid_string, "%i", pid);
-  strcat(fifo_user, pid_string);
-  if (mkfifo(fifo_user, 0660) != 0)
+  strcat(USER_FIFO_PATH, pid_string);
+  if (mkfifo(USER_FIFO_PATH, 0660) != 0)
   {
     perror("Error: Failed to open fifo\n");
     exit(0);
   }
 
-  int fd = open(fifo_user, O_WRONLY | O_NONBLOCK);
+  int fd = open(USER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
 
+  tlv_request_t request;
+  tlv_reply_t reply;
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {
   case OP_CREATE_ACCOUNT:
-    create_account(argv[1], argv[2],argv[3],argv[5],pid);
+    request = create_account(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   case OP_BALANCE:
-    check_balance(argv[1], argv[2],argv[3],argv[5],pid);
+    request = check_balance(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   case OP_TRANSFER:
-    make_transfer(argv[1], argv[2],argv[3],argv[5],pid);
+    request = make_transfer(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   case OP_SHUTDOWN:
-    shutdown_server(argv[1], argv[2],argv[3],argv[5],pid);
+    request = shutdown_server(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   default:
+    printf("Invalid Option!\n");
+    return 0;
     break;
   }
-  remove(fifo_user);
+  write(fifo_server,&request,request.length);
+    printf("Invalid Option!\n");
+
+  getchar();
+  read(fifo_server,&reply,66666);
+
+  remove(USER_FIFO_PATH);
   close(fd);
   close(fifo_server);
 }
@@ -78,7 +91,7 @@ void print_usage(FILE *stream, char *progname)
   printf("3 - Shutdown server\n\n");
 }
 
-void create_account(char *user, char *password,char *delay,char *args,int pid) //0
+tlv_request_t create_account(char *user, char *password,char *delay,char *args,int pid) //0
 {
   int i = 0;
   char *tmp_str;
@@ -148,9 +161,10 @@ void create_account(char *user, char *password,char *delay,char *args,int pid) /
   request.value.header = user_info;
   request.value.create = new_account;
 
-  // Make request to server and send the struct
+  return request;
+
 }
-void check_balance(char *user, char *password,char *delay,char *args,int pid)
+tlv_request_t check_balance(char *user, char *password,char *delay,char *args,int pid)
 { //1
   req_header_t user_info;
   user_info.account_id = atoi(user);
@@ -165,8 +179,9 @@ void check_balance(char *user, char *password,char *delay,char *args,int pid)
   request.length = sizeof user_info;
   request.value.header = user_info;
   // send request t 
+  return request;
 }
-void make_transfer(char *user1, char *password,char *delay,char *args,int pid)
+tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,int pid)
 { //2
   //if validade user 1;
 
@@ -234,11 +249,11 @@ void make_transfer(char *user1, char *password,char *delay,char *args,int pid)
   request.length = sizeof user_info + sizeof transfer;
   request.value.header = user_info;
   request.value.transfer = transfer;
-
   // Make send the struct
+  return request;
 }
 
-void shutdown_server(char *id, char *password,char *delay,char *args,int pid)
+tlv_request_t shutdown_server(char *id, char *password,char *delay,char *args,int pid)
 { //3
   //if validade user;
   if (atoi(id) != ADMIN_ACCOUNT_ID)
@@ -258,4 +273,5 @@ void shutdown_server(char *id, char *password,char *delay,char *args,int pid)
   request.length = sizeof user_info;
   request.value.header = user_info;
   // Make send the struct
+  return request;
 }
