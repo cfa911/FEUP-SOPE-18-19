@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {
   case OP_CREATE_ACCOUNT:
-    create_account(argv[5], argv[1], argv[2]);
+    create_account(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   case OP_BALANCE:
     check_balance(argv[1], argv[2],argv[3],argv[5],pid);
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     make_transfer(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   case OP_SHUTDOWN:
-    shutdown_server(argv[1], argv[2]);
+    shutdown_server(argv[1], argv[2],argv[3],argv[5],pid);
     break;
   default:
     break;
@@ -78,35 +78,34 @@ void print_usage(FILE *stream, char *progname)
   printf("3 - Shutdown server\n\n");
 }
 
-void create_account(char *args, char *admin_id, char *admin_password) //0
+void create_account(char *user, char *password,char *delay,char *args,int pid) //0
 {
   int i = 0;
   char *tmp_str;
 
-  if (strcmp(admin_id, "0") != 0)
+  if (strcmp(user, "0") != 0)
   {
     perror("Error: Not Admin!! Can't create accounts\n");
     exit(1);
   }
 
-  //search and validade admin
 
-  req_create_account_t request_create_account;
+  req_create_account_t new_account;
   tmp_str = strtok(args, " "); //1st element
 
-  request_create_account.account_id = atoi(tmp_str);
+  new_account.account_id = atoi(tmp_str);
   tmp_str = strtok(NULL, " ");
   while (tmp_str != NULL)
   {
 
     if (i == 0)
     {
-      request_create_account.balance = atoi(tmp_str);
+      new_account.balance = atoi(tmp_str);
       //2nd element
     }
     else if (i == 1)
     {
-      strcat(request_create_account.password, tmp_str);
+      strcat(new_account.password, tmp_str);
       //3rd element
     }
     else
@@ -125,18 +124,34 @@ void create_account(char *args, char *admin_id, char *admin_password) //0
 
   //check values
 
-  if (request_create_account.balance < MIN_BALANCE || request_create_account.balance > MAX_BALANCE)
+  if (new_account.balance < MIN_BALANCE || new_account.balance > MAX_BALANCE)
     exit(1);
-  if (request_create_account.account_id <= ADMIN_ACCOUNT_ID || request_create_account.account_id > MAX_BANK_ACCOUNTS)
+  if (new_account.account_id <= ADMIN_ACCOUNT_ID || new_account.account_id > MAX_BANK_ACCOUNTS)
     exit(2);
-  if (strlen(request_create_account.password) < MIN_PASSWORD_LEN || strlen(request_create_account.password) > MAX_PASSWORD_LEN)
+  if (strlen(new_account.password) < MIN_PASSWORD_LEN || strlen(new_account.password) > MAX_PASSWORD_LEN)
     exit(3);
+
+
+  //search and validade admin
+  req_header_t user_info;
+  user_info.account_id = atoi(user);
+  strcat(user_info.password,password);
+  user_info.pid = pid;
+  user_info.op_delay_ms = atoi(delay);
+
+  
+
+
+  tlv_request_t request;
+  request.type = OP_CREATE_ACCOUNT;
+  request.length = sizeof user_info + sizeof new_account;
+  request.value.header = user_info;
+  request.value.create = new_account;
 
   // Make request to server and send the struct
 }
 void check_balance(char *user, char *password,char *delay,char *args,int pid)
 { //1
-  //if validade user;
   req_header_t user_info;
   user_info.account_id = atoi(user);
   strcat(user_info.password,password);
@@ -148,7 +163,7 @@ void check_balance(char *user, char *password,char *delay,char *args,int pid)
   tlv_request_t request;
   request.type = OP_BALANCE;
   request.length = sizeof user_info;
-  request.value.header = user_info; 
+  request.value.header = user_info;
   // send request t 
 }
 void make_transfer(char *user1, char *password,char *delay,char *args,int pid)
@@ -220,21 +235,27 @@ void make_transfer(char *user1, char *password,char *delay,char *args,int pid)
   request.value.header = user_info;
   request.value.transfer = transfer;
 
-  
-
-  
-
   // Make send the struct
 }
 
-void shutdown_server(char *admin, char *password)
+void shutdown_server(char *id, char *password,char *delay,char *args,int pid)
 { //3
   //if validade user;
-  if (atoi(admin) != ADMIN_ACCOUNT_ID)
+  if (atoi(id) != ADMIN_ACCOUNT_ID)
   {
     perror("ERROR: No permission for this operation");
     exit(1);
   }
 
-  // send remove(secure_srv) to thread
+  req_header_t user_info;
+  user_info.account_id = atoi(id);
+  strcat(user_info.password,password);
+  user_info.pid = pid;
+  user_info.op_delay_ms = atoi(delay);
+
+  tlv_request_t request;
+  request.type = OP_SHUTDOWN;
+  request.length = sizeof user_info;
+  request.value.header = user_info;
+  // Make send the struct
 }
