@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
   printf("Process pid %i\n", pid);
 
   int fifo_server = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
+  //int fifo_server = open("file.txt", O_RDWR | O_CREAT, 777);
 
 
   if (fifo_server < 0)
@@ -47,35 +48,65 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  int fd = open(USER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
+  int fd = open(USER_FIFO_PATH, O_RDWR | O_NONBLOCK);
 
-  tlv_request_t request;
-  tlv_reply_t reply;
+  struct tlv_request request;
+
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {
   case OP_CREATE_ACCOUNT:
-    request = create_account(argv[1], argv[2],argv[3],argv[5],pid);
+    request = create_account(argv[1], argv[2], argv[3], argv[5], pid);
     break;
   case OP_BALANCE:
-    request = check_balance(argv[1], argv[2],argv[3],argv[5],pid);
+    request = check_balance(argv[1], argv[2], argv[3], argv[5], pid);
     break;
   case OP_TRANSFER:
-    request = make_transfer(argv[1], argv[2],argv[3],argv[5],pid);
+    request = make_transfer(argv[1], argv[2], argv[3], argv[5], pid);
     break;
   case OP_SHUTDOWN:
-    request = shutdown_server(argv[1], argv[2],argv[3],argv[5],pid);
+    request = shutdown_server(argv[1], argv[2], argv[3], argv[5], pid);
     break;
   default:
     printf("Invalid Option!\n");
     return 0;
     break;
   }
-  write(fifo_server,&request,request.length);
+  printf("\n%i\n", request.value.header.pid);
+  getchar();
+
+  while (1)
+  {
+    printf("\nREQUEST: %i\n", request.value.header.pid);
+    write(fifo_server, &request, request.length);
+    
+
+  }
+  /*
+  if (write(fifo_server, &request, request.length) == -1)
     printf("Invalid Option!\n");
 
-  getchar();
-  read(fifo_server,&reply,66666);
+  printf("\n\n%i\n",request.value.header.pid);
 
+  struct tlv_request *updateData = malloc(sizeof(struct tlv_request));
+  read(fifo_server, &updateData, sizeof(updateData));
+  printf("\n\n%i\n",updateData->value.header.pid);
+  //getchar();
+  //read(fifo_server,&reply,66666);
+  */
+
+  /*
+  THIS WORKS
+  fwrite(&request, sizeof(struct tlv_reply), 1, outfile);
+  if (fwrite != 0)
+    printf("contents to file written successfully !\n");
+  fclose(outfile);
+  infile = fopen("person.dat", "r");
+
+  while (fread(&input, sizeof(struct tlv_reply), 1, infile))
+    printf("id = %d \n",input.value.header.account_id);
+  fclose(infile);
+
+  */
   remove(USER_FIFO_PATH);
   close(fd);
   close(fifo_server);
@@ -91,7 +122,7 @@ void print_usage(FILE *stream, char *progname)
   printf("3 - Shutdown server\n\n");
 }
 
-tlv_request_t create_account(char *user, char *password,char *delay,char *args,int pid) //0
+tlv_request_t create_account(char *user, char *password, char *delay, char *args, int pid) //0
 {
   int i = 0;
   char *tmp_str;
@@ -101,7 +132,6 @@ tlv_request_t create_account(char *user, char *password,char *delay,char *args,i
     perror("Error: Not Admin!! Can't create accounts\n");
     exit(1);
   }
-
 
   req_create_account_t new_account;
   tmp_str = strtok(args, " "); //1st element
@@ -144,16 +174,12 @@ tlv_request_t create_account(char *user, char *password,char *delay,char *args,i
   if (strlen(new_account.password) < MIN_PASSWORD_LEN || strlen(new_account.password) > MAX_PASSWORD_LEN)
     exit(3);
 
-
   //search and validade admin
   req_header_t user_info;
   user_info.account_id = atoi(user);
-  strcat(user_info.password,password);
+  strcat(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
-
-  
-
 
   tlv_request_t request;
   request.type = OP_CREATE_ACCOUNT;
@@ -162,33 +188,30 @@ tlv_request_t create_account(char *user, char *password,char *delay,char *args,i
   request.value.create = new_account;
 
   return request;
-
 }
-tlv_request_t check_balance(char *user, char *password,char *delay,char *args,int pid)
+tlv_request_t check_balance(char *user, char *password, char *delay, char *args, int pid)
 { //1
   req_header_t user_info;
   user_info.account_id = atoi(user);
-  strcat(user_info.password,password);
+  strcat(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
-
-
 
   tlv_request_t request;
   request.type = OP_BALANCE;
   request.length = sizeof user_info;
   request.value.header = user_info;
-  // send request t 
+  // send request t
   return request;
 }
-tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,int pid)
+tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args, int pid)
 { //2
   //if validade user 1;
 
   char *tmp_str;
   int user2;
   int amount = 0;
-  if(strcmp(args,"") == 0)
+  if (strcmp(args, "") == 0)
   {
     perror("ERROR: NO ARGUMENTS!!\n");
     exit(0);
@@ -198,21 +221,19 @@ tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,i
   if (tmp_str != NULL)
   {
     tmp_str = strtok(NULL, " ");
-    if(tmp_str == NULL)
+    if (tmp_str == NULL)
     {
       perror("ERROR: ");
       exit(1);
     }
     amount = atoi(tmp_str);
 
-
     tmp_str = strtok(NULL, " ");
-    if(tmp_str != NULL)
+    if (tmp_str != NULL)
     {
       perror("ERROR: ");
       exit(1);
     }
-
 
     if (amount <= 0)
     {
@@ -232,7 +253,6 @@ tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,i
   transfer.account_id = user2;
   transfer.amount = amount;
 
-
   if (amount < MIN_BALANCE || amount > MAX_BALANCE)
     exit(1);
   if (user2 <= ADMIN_ACCOUNT_ID || user2 > MAX_BANK_ACCOUNTS || user2 == atoi(user1))
@@ -240,7 +260,7 @@ tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,i
 
   req_header_t user_info;
   user_info.account_id = atoi(user1);
-  strcat(user_info.password,password);
+  strcat(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 
@@ -253,7 +273,7 @@ tlv_request_t make_transfer(char *user1, char *password,char *delay,char *args,i
   return request;
 }
 
-tlv_request_t shutdown_server(char *id, char *password,char *delay,char *args,int pid)
+tlv_request_t shutdown_server(char *id, char *password, char *delay, char *args, int pid)
 { //3
   //if validade user;
   if (atoi(id) != ADMIN_ACCOUNT_ID)
@@ -264,7 +284,7 @@ tlv_request_t shutdown_server(char *id, char *password,char *delay,char *args,in
 
   req_header_t user_info;
   user_info.account_id = atoi(id);
-  strcat(user_info.password,password);
+  strcat(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 

@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     printf("Error opening FIFO\n");
     return -1;
   }
-
+  tlv_request_t structure;
   pthread_t threads[MAX_BANK_OFFICES];
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
@@ -117,7 +117,24 @@ int main(int argc, char *argv[])
       exit(1);
     }
   }
-  getchar();
+  char a[2];
+  scanf("%s", a);
+
+  while (strcmp(a, "q") != 0)
+  {
+    if(read(fd, &structure, sizeof(structure)) > 0)
+    {
+    printf("\nPID:%i\n", structure.value.header.pid);
+    printf("DELAY:%i\n", structure.value.header.op_delay_ms);
+    printf("account_id:%i\n", structure.value.header.account_id);
+
+    }
+    getchar();
+    scanf("%s", a);
+    /* code */
+  }
+  
+
   close(fd);
   remove(SERVER_FIFO_PATH);
   return 0;
