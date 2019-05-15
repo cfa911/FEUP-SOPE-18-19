@@ -123,11 +123,21 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+// void validateAccount(tlv_request_t request){
+//
+//   req_value_t reqvalue;
+//   request.value = reqvalue.header;
+//   req_header_t headervalidate;
+//
+//   if(headervalidate.pid != || headervalidate.account_id != || headervalidate.password != || headervalidate.op_delay_ms != ){
+//
+//
+//
+//   }
+//
+// }
+
 void print_usage(FILE *stream, char *progname)
 {
   fprintf(stream, "usage: %s <nr_bank_offices_to_create> <password>\n", progname);
 }
-
-
-
-
