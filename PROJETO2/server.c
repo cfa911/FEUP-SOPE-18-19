@@ -13,6 +13,8 @@
 #include <math.h>
 #include <time.h>
 
+bank_account_t accounts[MAX_BANK_ACCOUNTS];
+
 int main(int argc, char *argv[])
 {
   srand(time(NULL)); //Randomize time
@@ -57,6 +59,7 @@ int main(int argc, char *argv[])
   //echo -n "password""salt" | sha256sum
   char result[WIDTH_ID];
   char salt[SALT_LEN+1];
+
   char code[30] = "echo -n ";
   char output[HASH_LEN+1];
   sprintf(result, "%i", ADMIN_ACCOUNT_ID); //future iterations change ADMIN_ACCOUNT_ID to any ID
@@ -75,13 +78,9 @@ int main(int argc, char *argv[])
   printf("%s\n",output);
 
 
+  //struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct bank_account)); // creates memory for accounts
 
-
-
-
-  struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct bank_account)); // creates memory for accounts
-
-  accounts = &admin_account;
+  accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
 
   //criar fifo secure_srv
   if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
@@ -128,3 +127,7 @@ void print_usage(FILE *stream, char *progname)
 {
   fprintf(stream, "usage: %s <nr_bank_offices_to_create> <password>\n", progname);
 }
+
+
+
+
