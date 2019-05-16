@@ -1,0 +1,3 @@
+#MAKE .DEPEND FILE
+thread_function.o: thread_function.c thread_function.h
+server.o: server.c server.h ../constants.h ../types.h thread_function.h
