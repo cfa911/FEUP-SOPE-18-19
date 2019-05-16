@@ -141,19 +141,17 @@ int main(int argc, char *argv[])
       //open fifo_user
       sprintf(user_pid, "%i", request.value.header.pid); // int to string
       strcat(fifo_user_name, user_pid);
-
-      fifo_user = open(fifo_user_name, O_WRONLY);
+ 
+      fifo_user = open(fifo_user_name, O_WRONLY | O_NONBLOCK);
       printf("\n%s\n",fifo_user_name);
 
       if (fifo_user < 0)
       {
-        perror("Error: Failed to open user fifo\n");
-        unlink(SERVER_FIFO_PATH);
-        exit(0);
+        printf("Error: Failed to open user fifo %s\n",fifo_user_name);
       }
       else
       {
-        printf("fifo user opened\n");
+        printf("fifo user %s : opened\n",fifo_user_name);
       }
 
       //process request
