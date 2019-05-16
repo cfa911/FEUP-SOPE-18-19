@@ -76,15 +76,10 @@ int main(int argc, char *argv[])
 
   while (read(fifo_user,&reply,sizeof reply) <= 0)
   {
-<<<<<<< HEAD
     printf("\nREQUEST: %i\n", request.value.header.pid);
     write(fifo_server, &request, request.length);
 
 
-=======
-    printf(" REQUEST: %i ", request.value.header.pid);
-    write(fifo_server, &request, sizeof request);
->>>>>>> 576ead1248a13a821f7138e28947177fc2cadc41
   }
   //process reply
   unlink(USER_FIFO_PATH);
