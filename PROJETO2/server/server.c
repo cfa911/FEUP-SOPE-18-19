@@ -175,16 +175,18 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-// void validateAccount(tlv_request_t request){
-//
-//   for(int i = 0; accounts[i] != '\0'; i++){
-//     if (request.value.header.account_id == accounts.account_id[i]){
-//
-//     } else{
-//       perror("ERROR: Account doesn't exist\n");
-//     }
-//   }
-// }
+bool validateAccount(tlv_request_t request){
+
+  for(int i = 0; accounts[i] != '\0'; i++){
+    if (request.value.header.account_id == accounts.account_id[i]){
+        //fazer HASH PASSWORD
+        return true;
+    } else{
+      perror("ERROR: Account doesn't exist\n");
+    }
+  }
+  return false;
+}
 
 void sigint_handler(int sig)
 {
