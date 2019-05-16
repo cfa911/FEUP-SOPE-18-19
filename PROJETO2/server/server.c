@@ -18,8 +18,14 @@ bank_account_t accounts[MAX_BANK_ACCOUNTS];
 
 int main(int argc, char *argv[])
 {
-  srand(time(NULL)); //Randomize time
+
   FILE *commandHash;
+  srand(time(NULL)); //Randomize time
+
+  char TMP_USER_FIFO_PATH[USER_FIFO_PATH_LEN] = "/tmp/secure_";
+
+  int fifo_server;
+  int fifo_user;
   // CHAIN OF REQUIREMENTS
   if (argc != 3)
   {
@@ -55,38 +61,32 @@ int main(int argc, char *argv[])
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
 
-
   //GENERATE SALT
-  int MAX_NUMBER = pow(2,30);
+  int MAX_NUMBER = pow(2, 30);
   int salt_number = rand() % MAX_NUMBER + 1;
 
-
-  printf("%i\n",salt_number);
+  printf("%i\n", salt_number);
 
   //sha256
-  //echo -n "password""salt" | sha256sum
   char result[WIDTH_ID];
-  char salt[SALT_LEN+1];
+  char salt[SALT_LEN + 1];
 
+  //code
   char code[30] = "echo -n ";
-  char output[HASH_LEN+1];
+  char output[HASH_LEN + 1];
   sprintf(result, "%i", ADMIN_ACCOUNT_ID); //future iterations change ADMIN_ACCOUNT_ID to any ID
   sprintf(salt, "%i", salt_number);
 
-
   strcat(code, argv[2]); // password
   strcat(code, " ");
-  strcat(code, salt);//salt
+  strcat(code, salt); //salt
   strcat(code, " | sha256sum");
   commandHash = popen(code, "r");
   fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
-  strcpy(admin_account.hash, output); //output is hashed password
-  strcpy(admin_account.salt, salt); //the Salt
+  strcpy(admin_account.hash, output);       //output is hashed password
+  strcpy(admin_account.salt, salt);         //the Salt
 
-  printf("%s\n",output);
-
-
-  //struct bank_account *accounts = malloc(atoi(argv[1]) * sizeof(struct bank_account)); // creates memory for accounts
+  printf("%s\n", output);
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
 
@@ -96,15 +96,15 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Error creating secure_srv fifo\n");
     return -3;
   }
-
-  int fd = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
-
-  if (fd == -1)
+  fifo_server = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
+  if (fifo_server == -1)
   {
     printf("Error opening FIFO\n");
     return -1;
   }
-  tlv_request_t structure;
+  struct tlv_request request;
+  struct tlv_reply reply;
+
   pthread_t threads[MAX_BANK_OFFICES];
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
@@ -125,25 +125,52 @@ int main(int argc, char *argv[])
       exit(1);
     }
   }
-  char a[2];
-  scanf("%s", a);
 
-  while (strcmp(a, "q") != 0)
+  //read info from user
+  char fifo_user_name[USER_FIFO_PATH_LEN] = "/tmp/secure_";
+  char user_pid[WIDTH_ID];
+
+  while (1)
   {
-    if(read(fd, &structure, sizeof(structure)) > 0)
+    if (read(fifo_server, &request, sizeof(request)) > 0)
     {
-    printf("\nPID:%i\n", structure.value.header.pid);
-    printf("DELAY:%i\n", structure.value.header.op_delay_ms);
-    printf("account_id:%i\n", structure.value.header.account_id);
+      printf("\nPID:%i\n", request.value.header.pid);
+      printf("DELAY:%i\n", request.value.header.op_delay_ms);
+      printf("account_id:%i\n", request.value.header.account_id);
 
+      //open fifo_user
+      sprintf(user_pid, "%i", request.value.header.pid); // int to string
+      strcat(fifo_user_name, user_pid);
+
+      fifo_user = open(fifo_user_name, O_WRONLY);
+      printf("\n%s\n",fifo_user_name);
+
+      if (fifo_user < 0)
+      {
+        perror("Error: Failed to open user fifo\n");
+        unlink(SERVER_FIFO_PATH);
+        exit(0);
+      }
+      else
+      {
+        printf("fifo user opened\n");
+      }
+
+      //process request
+
+      rep_value_t reply_value;
+
+      reply.length = sizeof reply;
+      reply.type = request.type;
+      reply.value = reply_value;
+
+      write(fifo_user, &reply, sizeof reply);
+      close(fifo_user);
+      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
     }
-    getchar();
-    scanf("%s", a);
-    /* code */
   }
 
-
-  close(fd);
+  close(fifo_server);
   remove(SERVER_FIFO_PATH);
   return 0;
 }

@@ -20,6 +20,12 @@ int main(int argc, char *argv[])
 {
   char pid_string[6];
   char USER_FIFO_PATH[USER_FIFO_PATH_LEN] = "/tmp/secure_";
+  int fifo_server = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK); // open fifo connection
+  int pid = getpid();
+
+  struct tlv_request request; //request structure
+  struct tlv_reply reply; //reply structure
+
 
   if (argc != 6)
   {
@@ -28,29 +34,24 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  int pid = getpid();
   printf("Process pid %i\n", pid);
-
-  int fifo_server = open(SERVER_FIFO_PATH, O_WRONLY | O_NONBLOCK);
-  //int fifo_server = open("file.txt", O_RDWR | O_CREAT, 777);
-
 
   if (fifo_server < 0)
   {
-    perror("Error: Failed to open fifo\n");
+    perror("Error: Failed to open server fifo\n");
     exit(0);
   }
+  // SET PID TO STRING TO MAKE FIFO
   sprintf(pid_string, "%i", pid);
   strcat(USER_FIFO_PATH, pid_string);
+  //
   if (mkfifo(USER_FIFO_PATH, 0660) != 0)
   {
     perror("Error: Failed to open fifo\n");
     exit(0);
   }
 
-  int fd = open(USER_FIFO_PATH, O_RDWR | O_NONBLOCK);
-
-  struct tlv_request request;
+  int fifo_user = open(USER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
 
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {
@@ -72,43 +73,22 @@ int main(int argc, char *argv[])
     break;
   }
   printf("\n%i\n", request.value.header.pid);
-  getchar();
 
-  while (1)
+  while (read(fifo_user,&reply,sizeof reply) <= 0)
   {
+<<<<<<< HEAD
     printf("\nREQUEST: %i\n", request.value.header.pid);
     write(fifo_server, &request, request.length);
 
 
+=======
+    printf(" REQUEST: %i ", request.value.header.pid);
+    write(fifo_server, &request, sizeof request);
+>>>>>>> 576ead1248a13a821f7138e28947177fc2cadc41
   }
-  /*
-  if (write(fifo_server, &request, request.length) == -1)
-    printf("Invalid Option!\n");
-
-  printf("\n\n%i\n",request.value.header.pid);
-
-  struct tlv_request *updateData = malloc(sizeof(struct tlv_request));
-  read(fifo_server, &updateData, sizeof(updateData));
-  printf("\n\n%i\n",updateData->value.header.pid);
-  //getchar();
-  //read(fifo_server,&reply,66666);
-  */
-
-  /*
-  THIS WORKS
-  fwrite(&request, sizeof(struct tlv_reply), 1, outfile);
-  if (fwrite != 0)
-    printf("contents to file written successfully !\n");
-  fclose(outfile);
-  infile = fopen("person.dat", "r");
-
-  while (fread(&input, sizeof(struct tlv_reply), 1, infile))
-    printf("id = %d \n",input.value.header.account_id);
-  fclose(infile);
-
-  */
-  remove(USER_FIFO_PATH);
-  close(fd);
+  //process reply
+  unlink(USER_FIFO_PATH);
+  close(fifo_user);
   close(fifo_server);
 }
 
