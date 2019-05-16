@@ -18,10 +18,6 @@ bank_account_t accounts[MAX_BANK_ACCOUNTS];
 
 int main(int argc, char *argv[])
 {
-
-  FILE *commandHash;
-  srand(time(NULL)); //Randomize time
-
   char TMP_USER_FIFO_PATH[USER_FIFO_PATH_LEN] = "/tmp/secure_";
 
   int fifo_server;
@@ -56,37 +52,25 @@ int main(int argc, char *argv[])
   action.sa_flags = 0;
   sigaction(SIGINT, &action, NULL);
 
+
+  char *a = hashingFunc(argv[2]);
+  char hash[HASH_LEN +1];
+  char saltes[SALT_LEN +1];
+
+  char *tmp; 
+  tmp = strtok(a," ");
+  strcpy(hash,tmp);
+  tmp = strtok(NULL," ");
+  strcpy(saltes,tmp);
+
   // CRIAR CONTA ADMINISTRADOR
   bank_account_t admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
 
-  //GENERATE SALT
-  int MAX_NUMBER = pow(2, 30);
-  int salt_number = rand() % MAX_NUMBER + 1;
+  strcpy(admin_account.hash, hash);       //output is hashed password
+  strcpy(admin_account.salt, saltes);         //the Salt
 
-  printf("%i\n", salt_number);
-
-  //sha256
-  char result[WIDTH_ID];
-  char salt[SALT_LEN + 1];
-
-  //code
-  char code[30] = "echo -n ";
-  char output[HASH_LEN + 1];
-  sprintf(result, "%i", ADMIN_ACCOUNT_ID); //future iterations change ADMIN_ACCOUNT_ID to any ID
-  sprintf(salt, "%i", salt_number);
-
-  strcat(code, argv[2]); // password
-  strcat(code, " ");
-  strcat(code, salt); //salt
-  strcat(code, " | sha256sum");
-  commandHash = popen(code, "r");
-  fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
-  strcpy(admin_account.hash, output);       //output is hashed password
-  strcpy(admin_account.salt, salt);         //the Salt
-
-  printf("%s\n", output);
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
 
@@ -163,7 +147,7 @@ int main(int argc, char *argv[])
       reply.value = reply_value;
 
       write(fifo_user, &reply, sizeof reply);
-      printf("Message sent to fifo user: %s\n", fifo_user_name);
+      printf("Message sent to fifo user: %s \n", fifo_user_name);
 
       close(fifo_user);
       memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
@@ -175,6 +159,49 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+char * hashingFunc(char *password)
+{
+  FILE *commandHash;
+  srand(time(NULL)); //Randomize time
+  char *values = malloc(65*2*sizeof(char));
+  //GENERATE SALT
+  int MAX_NUMBER = pow(2, 30);
+  int salt_number = rand() % MAX_NUMBER + 1;
+
+  //sha256
+  char salt[SALT_LEN + 1];
+
+  //code
+  char code[30] = "echo -n ";
+  char output[HASH_LEN + 1];
+  sprintf(salt, "%i", salt_number);
+  strcpy(values,salt);
+
+  strcat(code, password); // password
+  strcat(code, " ");
+  strcat(code, salt); //salt
+  strcat(code, " | sha256sum");
+  commandHash = popen(code, "r");
+  fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
+/*
+  strcpy(admin_account.hash, output);       //output is hashed password
+  strcpy(admin_account.salt, salt);         //the Salt
+*/
+  strcat(values," ");
+  strcat(values,output);
+  return values;
+}
+
+// void validateAccount(tlv_request_t request){
+//
+//   for(int i = 0; accounts[i] != '\0'; i++){
+//     if (request.value.header.account_id == accounts.account_id[i]){
+//
+//     } else{
+//       perror("ERROR: Account doesn't exist\n");
+//     }
+//   }
+// }
 bool validateAccount(tlv_request_t request){
 
   for(int i = 0; accounts[i] != '\0'; i++){

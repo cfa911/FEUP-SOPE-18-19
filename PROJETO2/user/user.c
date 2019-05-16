@@ -72,11 +72,10 @@ int main(int argc, char *argv[])
     return 0;
     break;
   }
-  printf("\n%i\n", request.value.header.pid);
 
   while (read(fifo_user,&reply,sizeof reply) <= 0)
   {
-    printf("REQUEST: %i", request.value.header.pid);
+    printf(" REQUEST: %i ", request.value.header.pid);
     write(fifo_server, &request, request.length);
   }
   //process reply
@@ -196,7 +195,7 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
     tmp_str = strtok(NULL, " ");
     if (tmp_str == NULL)
     {
-      perror("ERROR: ");
+      printf("ERROR: NOT ENOUGHT ARGUMENTS\n");
       exit(1);
     }
     amount = atoi(tmp_str);
@@ -204,7 +203,7 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
     tmp_str = strtok(NULL, " ");
     if (tmp_str != NULL)
     {
-      perror("ERROR: ");
+      perror("ERROR: NOT ENOUGHT ARGUMENTS");
       exit(1);
     }
 

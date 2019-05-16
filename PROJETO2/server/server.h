@@ -6,5 +6,5 @@
 void print_usage(FILE * stream, char * progname);
 bool validateAccount(tlv_request_t request);
 void sigint_handler(int sig);
-
+char * hashingFunc(char *password);
 #endif  // _SERVER_H_
