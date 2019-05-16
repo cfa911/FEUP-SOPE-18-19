@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   {
     printf("\nREQUEST: %i\n", request.value.header.pid);
     write(fifo_server, &request, request.length);
-    
+
 
   }
   /*

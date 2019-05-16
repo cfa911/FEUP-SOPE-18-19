@@ -12,6 +12,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <signal.h>
 
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
 
@@ -41,6 +42,13 @@ int main(int argc, char *argv[])
     printf("Password too long\n");
     return -3;
   }
+
+  struct sigaction action;
+
+  action.sa_handler = sigint_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+  sigaction(SIGINT, &action, NULL);
 
   // CRIAR CONTA ADMINISTRADOR
   bank_account_t admin_account;
@@ -142,17 +150,31 @@ int main(int argc, char *argv[])
 
 // void validateAccount(tlv_request_t request){
 //
-//   req_value_t reqvalue;
-//   request.value = reqvalue.header;
-//   req_header_t headervalidate;
+//   for(int i = 0; accounts[i] != '\0'; i++){
+//     if (request.value.header.account_id == accounts.account_id[i]){
 //
-//   if(headervalidate.pid != || headervalidate.account_id != || headervalidate.password != || headervalidate.op_delay_ms != ){
-//
-//
-//
+//     } else{
+//       perror("ERROR: Account doesn't exist\n");
+//     }
 //   }
-//
 // }
+
+void sigint_handler(int sig) {
+
+	static int in = 0;
+
+	if (sig == 2 && in == 0) // Received control+c signal askign user to leave
+	{
+		in = 1;
+		char c;
+		printf("Are you sure you want to terminate(Y/N) ");
+		c = getchar();
+		if (c == 'y' || c == 'Y')
+			exit(2);
+	}
+	else
+		in = 0;
+}
 
 void print_usage(FILE *stream, char *progname)
 {
