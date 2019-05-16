@@ -192,20 +192,11 @@ char * hashingFunc(char *password)
   return values;
 }
 
-// void validateAccount(tlv_request_t request){
-//
-//   for(int i = 0; accounts[i] != '\0'; i++){
-//     if (request.value.header.account_id == accounts.account_id[i]){
-//
-//     } else{
-//       perror("ERROR: Account doesn't exist\n");
-//     }
-//   }
-// }
+
 bool validateAccount(tlv_request_t request){
 
-  for(int i = 0; accounts[i] != '\0'; i++){
-    if (request.value.header.account_id == accounts.account_id[i]){
+  for(int i = 0; i<=MAX_BANK_ACCOUNTS; i++){
+    if (request.value.header.account_id == accounts[i].account_id){
         //fazer HASH PASSWORD
         return true;
     } else{

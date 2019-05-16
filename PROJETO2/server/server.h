@@ -2,6 +2,7 @@
 #define _SERVER_H_
 
 #include <stdbool.h>
+#include "../types.h"
 
 void print_usage(FILE * stream, char * progname);
 bool validateAccount(tlv_request_t request);
