@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
   }
 
   //read info from user
-  char fifo_user_name[USER_FIFO_PATH_LEN] = "/tmp/secure_";
+  char fifo_user_name[USER_FIFO_PATH_LEN];
   char user_pid[WIDTH_ID];
 
   while (1)
@@ -140,18 +140,18 @@ int main(int argc, char *argv[])
 
       //open fifo_user
       sprintf(user_pid, "%i", request.value.header.pid); // int to string
+      strcat(fifo_user_name, "/tmp/secure_");
       strcat(fifo_user_name, user_pid);
- 
+
       fifo_user = open(fifo_user_name, O_WRONLY | O_NONBLOCK);
-      printf("\n%s\n",fifo_user_name);
 
       if (fifo_user < 0)
       {
-        printf("Error: Failed to open user fifo %s\n",fifo_user_name);
+        printf("Error: Failed to open user fifo user: %s\n", fifo_user_name);
       }
       else
       {
-        printf("fifo user %s : opened\n",fifo_user_name);
+        printf("fifo user: %s opened\n", fifo_user_name);
       }
 
       //process request
@@ -163,13 +163,15 @@ int main(int argc, char *argv[])
       reply.value = reply_value;
 
       write(fifo_user, &reply, sizeof reply);
+      printf("Message sent to fifo user: %s\n", fifo_user_name);
+
       close(fifo_user);
       memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
     }
   }
 
   close(fifo_server);
-  remove(SERVER_FIFO_PATH);
+  unlink(SERVER_FIFO_PATH);
   return 0;
 }
 
@@ -184,21 +186,25 @@ int main(int argc, char *argv[])
 //   }
 // }
 
-void sigint_handler(int sig) {
+void sigint_handler(int sig)
+{
 
-	static int in = 0;
+  static int in = 0;
 
-	if (sig == 2 && in == 0) // Received control+c signal askign user to leave
-	{
-		in = 1;
-		char c;
-		printf("Are you sure you want to terminate(Y/N) ");
-		c = getchar();
-		if (c == 'y' || c == 'Y')
-			exit(2);
-	}
-	else
-		in = 0;
+  if (sig == 2 && in == 0) // Received control+c signal askign user to leave
+  {
+    in = 1;
+    char c;
+    printf("Are you sure you want to terminate(Y/N) ");
+    c = getchar();
+    if (c == 'y' || c == 'Y')
+    {
+      unlink(SERVER_FIFO_PATH);
+      exit(2);
+    }
+  }
+  else
+    in = 0;
 }
 
 void print_usage(FILE *stream, char *progname)
