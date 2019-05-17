@@ -94,7 +94,6 @@ int main(int argc, char *argv[])
 
   //read info from user
   char fifo_user_name[USER_FIFO_PATH_LEN];
-  char user_pid[WIDTH_ID];
 
   while (1)
   {

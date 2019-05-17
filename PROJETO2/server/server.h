@@ -23,6 +23,7 @@ bool account_exists(tlv_request_t request);
 bool check_hash(char *password, char *salt, char *desired_hash);
 void sigint_handler(int sig);
 char *hashing_func(char *password);
+
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
 
 #endif  // _SERVER_H_

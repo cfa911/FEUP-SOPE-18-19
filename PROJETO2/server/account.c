@@ -39,7 +39,12 @@ tlv_reply_t create_account(tlv_request_t request)
   reply.length = sizeof(value);
   reply.value = value;
   reply.type = OP_CREATE_ACCOUNT;
-  if (account_exists(request)) //RC_ID_IN_USE  conta  existente
+
+
+  tlv_request_t tmp_request;
+  tmp_request.value.header.account_id = request.value.create.account_id; 
+
+  if (account_exists(tmp_request)) //RC_ID_IN_USE  conta  existente
   {
     header.ret_code = RC_ID_IN_USE;
   }
