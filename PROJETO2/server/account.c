@@ -61,7 +61,7 @@ tlv_reply_t server_shutdown(tlv_request_t request)
   rep_header_t header;
   rep_shutdown_t shutdown;
 
-  if (validateAccount(request))
+  if (account_exists(request))
   {
     reply.type = RC_OP_NALLOW; //pedido realizado por um cliente
     value.header = header;
