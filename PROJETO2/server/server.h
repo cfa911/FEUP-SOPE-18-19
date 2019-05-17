@@ -21,7 +21,7 @@ void print_usage(FILE * stream, char * progname);
 bool account_exists(tlv_request_t request);
 bool check_hash(char *password, char *salt, char *desired_hash);
 void sigint_handler(int sig);
-char * hashingFunc(char *password);
+char *hashing_func(char *password);
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
 
 

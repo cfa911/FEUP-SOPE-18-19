@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
   action.sa_flags = 0;
   sigaction(SIGINT, &action, NULL);
 
-  char *a = hashingFunc(argv[2]);
+  char *a = hashing_func(argv[2]);
   char hash[HASH_LEN + 1];
   char saltes[SALT_LEN + 1];
 
@@ -53,6 +53,7 @@ int main(int argc, char *argv[]){
   strcpy(admin_account.salt, saltes); //the Salt
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
+
 
   //criar fifo secure_srv
   if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
@@ -140,7 +141,7 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
-char *hashingFunc(char *password)
+char *hashing_func(char *password)
 {
   FILE *command_hash;
   srand(time(NULL)); //Randomize time
@@ -177,9 +178,9 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   char code[30] = "echo -n ";
   char hash[HASH_LEN + 1];
 
-  strcat(code, password); // password
+  strcat(code, password); // echo -n "password"
   strcat(code, " ");
-  strcat(code, salt); //salt
+  strcat(code, salt); //echo -n "password" "salt"
   strcat(code, " | sha256sum");
   command_hash = popen(code, "r");
   fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
@@ -189,17 +190,6 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   else
     return false;
 }
-
-// void validateAccount(tlv_request_t request){
-//
-//   for(int i = 0; accounts[i] != '\0'; i++){
-//     if (request.value.header.account_id == accounts.account_id[i]){
-//
-//     } else{
-//       perror("ERROR: Account doesn't exist\n");
-//     }
-//   }
-// }
 
 bool account_exists(tlv_request_t request)
 {
