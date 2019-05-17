@@ -17,6 +17,11 @@
 #include <time.h>
 #include <signal.h>
 #include <stdio.h>
+#include "queue.h"
+#include <semaphore.h>
+
+#define SHARED 0
+
 
 void print_usage(FILE * stream, char * progname);
 bool account_exists(tlv_request_t request);
@@ -25,5 +30,8 @@ void sigint_handler(int sig);
 char *hashing_func(char *password);
 
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
+struct Queue q; //queue struct
+sem_t empty, full; 
+int CLOSE_FIFO_SERVER;
 
 #endif  // _SERVER_H_

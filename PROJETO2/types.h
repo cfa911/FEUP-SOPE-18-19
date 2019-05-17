@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-
+#include <pthread.h>
 #include <unistd.h>
 #include "constants.h"
 
@@ -173,3 +173,7 @@ typedef struct tlv_reply {
 } __attribute__((packed)) tlv_reply_t;
 
 
+typedef struct related_mutex {
+  uint32_t account_id;
+  pthread_mutex_t mymutex;
+} related_mutex_t;
