@@ -126,9 +126,9 @@ tlv_reply_t request_make_transfer(tlv_request_t request)
   int id1 = request.value.header.account_id;
   int id2 = request.value.transfer.account_id;
 
-  int balance_1;
-  int balance_2;
-  int amount = request.value.transfer.amount;
+  uint32_t balance_1;
+  uint32_t balance_2;
+  uint32_t amount = request.value.transfer.amount;
 
   tlv_request_t aux_request;
   aux_request.value.header.account_id = request.value.transfer.account_id;
@@ -137,6 +137,8 @@ tlv_reply_t request_make_transfer(tlv_request_t request)
   { //check for user 1
     if (account_exists(aux_request))
     { //check for user 2
+      balance_1 = accounts[id1].balance;
+      balance_2 = accounts[id2].balance;
       if (check_hash(request.value.header.password, accounts[id1].salt, accounts[id1].hash))
       {
         if (id1 != ADMIN_ACCOUNT_ID)
@@ -147,14 +149,11 @@ tlv_reply_t request_make_transfer(tlv_request_t request)
           }
           else
           {
-            balance_1 = accounts[id1].balance;
-            balance_2 = accounts[id2].balance;
-
-            if ((balance_1 - amount) < MIN_BALANCE)
+            if (balance_1 <= amount)
             {
               header.ret_code = RC_NO_FUNDS;
             }
-            else if ((balance_2 + amount) > MAX_BALANCE)
+            else if (balance_2 + amount > MAX_BALANCE)
             {
               header.ret_code = RC_TOO_HIGH;
             }
@@ -257,7 +256,6 @@ void make_transfer(tlv_request_t request)
   int amount = request.value.transfer.amount;
   accounts[id2].balance += amount;
   accounts[id1].balance -= amount;
-
 }
 void server_shutdown(tlv_request_t request)
 {
