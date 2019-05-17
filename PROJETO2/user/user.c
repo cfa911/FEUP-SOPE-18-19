@@ -266,16 +266,9 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
 
 tlv_request_t shutdown_server(char *id, char *password, char *delay, char *args, int pid)
 { //3
-  //if validade user;
-  if (atoi(id) != ADMIN_ACCOUNT_ID)
-  {
-    perror("ERROR: No permission for this operation");
-    exit(1);
-  }
-
   req_header_t user_info;
   user_info.account_id = atoi(id);
-  strcat(user_info.password, password);
+  strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 

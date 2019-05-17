@@ -193,13 +193,19 @@ tlv_reply_t server_shutdown(tlv_request_t request)
   rep_header_t header;
   rep_shutdown_t shutdown;
   reply.type = OP_SHUTDOWN;
-  header.account_id = request.value.header.account_id;
+  int id = header.account_id = request.value.header.account_id;
   if (account_exists(request))
   {
-    if (request.value.header.account_id == ADMIN_ACCOUNT_ID)
-      header.ret_code = RC_OK; //pedido realizado por um admin
-    else
-      header.ret_code = RC_OP_NALLOW; //pedido realizado por um cliente
+    if (check_hash(request.value.header.password, accounts[id].salt, accounts[id].hash))
+    {
+      if (request.value.header.account_id == ADMIN_ACCOUNT_ID)
+        header.ret_code = RC_OK; //pedido realizado por um admin
+      else
+        header.ret_code = RC_OP_NALLOW; //pedido realizado por um cliente
+    }
+    else{
+      header.ret_code = RC_LOGIN_FAIL;
+    }
   }
   else
   {
