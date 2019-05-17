@@ -199,9 +199,9 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
       exit(1);
     }
 
-    if (amount <= 0)
+    if (amount < MIN_BALANCE || amount > MAX_BALANCE)
     {
-      perror("Error: Negative amount! Invalid transfer!\n");
+      perror("Error: INVALID amount! Invalid transfer!\n");
       exit(0);
     }
   }
@@ -216,10 +216,8 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
   req_transfer_t transfer; //deduction
   transfer.account_id = user2;
   transfer.amount = amount;
-
-  if (amount < MIN_BALANCE || amount > MAX_BALANCE)
-    exit(1);
-  if (user2 <= ADMIN_ACCOUNT_ID || user2 > MAX_BANK_ACCOUNTS || user2 == atoi(user1))
+  
+  if (user2 <= ADMIN_ACCOUNT_ID || user2 > MAX_BANK_ACCOUNTS)
     exit(2);
 
   req_header_t user_info;
