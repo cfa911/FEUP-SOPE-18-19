@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 
   char *tmp;
   tmp = strtok(a, " ");
-  strcpy(hash, tmp);
-  tmp = strtok(NULL, " ");
   strcpy(saltes, tmp);
+  tmp = strtok(NULL, " ");
+  strcpy(hash, tmp);
 
   // CRIAR CONTA ADMINISTRADOR
   struct bank_account admin_account;
@@ -167,6 +167,12 @@ char *hashing_func(char *password)
 bool check_hash(char *password, char *salt, char *desired_hash)
 {
   FILE *command_hash;
+
+  printf("password: %s\n",password);
+  printf("salt: %s\n",salt);
+  printf("desired_hash: %s\n",desired_hash);
+
+
   //code
   char code[30] = "echo -n ";
   char hash[HASH_LEN + 1];
@@ -177,6 +183,7 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   strcat(code, " | sha256sum");
   command_hash = popen(code, "r");
   fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
+  printf("result_hash: %s\n",hash);
 
   if (strcmp(hash, desired_hash) == 0) //same password
     return true;
@@ -191,13 +198,10 @@ bool account_exists(tlv_request_t request)
 
   if (accounts[id].hash[0] == '\0') //Checks if its null
   {
-    printf("ACCOUNT DOESN'T EXIST\n");
     return false;
   }
   else
   {
-    printf("ACCOUNT DOES EXIST\n");
-
     return true;
   }
 }

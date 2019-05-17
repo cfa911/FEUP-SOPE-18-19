@@ -71,11 +71,12 @@ int main(int argc, char *argv[])
     return 0;
     break;
   }
-  printf(" REQUEST: %i ", request.value.header.pid);
+  printf(" REQUEST: %i \n", request.value.header.pid);
   write(fifo_server, &request, request.length);
   while (read(fifo_user, &reply, sizeof reply) <= 0)
   {
   }
+  printf("\n%d\n", reply.value.header.ret_code);
   //process reply
   unlink(USER_FIFO_PATH);
   close(fifo_user);
@@ -99,7 +100,6 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
 
   req_create_account_t new_account;
   tmp_str = strtok(args, " "); //1st element
-
   new_account.account_id = atoi(tmp_str);
   tmp_str = strtok(NULL, " ");
   while (tmp_str != NULL)
@@ -112,7 +112,7 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
     }
     else if (i == 1)
     {
-      strcat(new_account.password, tmp_str);
+      strcpy(new_account.password, tmp_str);
       //3rd element
     }
     else
@@ -141,7 +141,7 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
   //search and validade admin
   req_header_t user_info;
   user_info.account_id = atoi(user);
-  strcat(user_info.password, password);
+  strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 
@@ -157,14 +157,15 @@ tlv_request_t check_balance(char *user, char *password, char *delay, char *args,
 { //1
   req_header_t user_info;
   user_info.account_id = atoi(user);
-  strcat(user_info.password, password);
+  strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 
   tlv_request_t request;
   request.type = OP_BALANCE;
-  request.length = sizeof user_info;
   request.value.header = user_info;
+  request.length = sizeof user_info;
+
   // send request t
   return request;
 }
@@ -216,13 +217,13 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
   req_transfer_t transfer; //deduction
   transfer.account_id = user2;
   transfer.amount = amount;
-  
-  if (user2 <= ADMIN_ACCOUNT_ID || user2 > MAX_BANK_ACCOUNTS)
+
+  if (user2 < ADMIN_ACCOUNT_ID || user2 > MAX_BANK_ACCOUNTS)
     exit(2);
 
   req_header_t user_info;
   user_info.account_id = atoi(user1);
-  strcat(user_info.password, password);
+  strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
 

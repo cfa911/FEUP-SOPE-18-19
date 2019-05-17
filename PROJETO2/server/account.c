@@ -6,7 +6,6 @@
 
 tlv_reply_t process_reply(tlv_request_t request)
 {
-  tlv_reply_t reply;
   switch (request.type)
   {
   case OP_CREATE_ACCOUNT:
@@ -21,9 +20,6 @@ tlv_reply_t process_reply(tlv_request_t request)
   case OP_SHUTDOWN:
     return server_shutdown(request);
     break;
-  default:
-    return reply;
-    break;
   }
 }
 
@@ -32,17 +28,13 @@ tlv_reply_t create_account(tlv_request_t request)
   tlv_reply_t reply;
   rep_value_t value;
   rep_header_t header;
-  int id = request.value.header.account_id;
+  int id1 = request.value.header.account_id;
+  int id2 = request.value.create.account_id;
 
-  header.account_id = request.value.header.account_id;
-  value.header = header;
-  reply.length = sizeof(value);
-  reply.value = value;
-  reply.type = OP_CREATE_ACCOUNT;
-
+  header.account_id = id1;
 
   tlv_request_t tmp_request;
-  tmp_request.value.header.account_id = request.value.create.account_id; 
+  tmp_request.value.header.account_id = id2;
 
   if (account_exists(tmp_request)) //RC_ID_IN_USE  conta  existente
   {
@@ -50,11 +42,14 @@ tlv_reply_t create_account(tlv_request_t request)
   }
   else
   {
-    if (check_hash(request.value.header.password, accounts[id].salt, accounts[id].hash))
+    if (check_hash(request.value.header.password, accounts[id1].salt, accounts[id1].hash))
     {
-      if (id == ADMIN_ACCOUNT_ID)
-      { //IS ADMIN
-        header.ret_code = RC_OK;
+      if (id1 == ADMIN_ACCOUNT_ID) //IS ADMIN
+      {
+        if (id2 == ADMIN_ACCOUNT_ID)
+          header.ret_code = RC_OP_NALLOW;
+        else
+          header.ret_code = RC_OK;
       }
       else
       {
@@ -66,6 +61,10 @@ tlv_reply_t create_account(tlv_request_t request)
       header.ret_code = RC_LOGIN_FAIL;
     }
   }
+  value.header = header;
+  reply.length = sizeof(value);
+  reply.value = value;
+  reply.type = OP_CREATE_ACCOUNT;
   return reply;
   //RC_OK
   //RC_OP_NALLOW  pedido realizado  por  um  cliente
@@ -157,7 +156,8 @@ tlv_reply_t make_transfer(tlv_request_t request)
             {
               header.ret_code = RC_TOO_HIGH;
             }
-            else{
+            else
+            {
               header.ret_code = RC_OK;
             }
           }
@@ -166,10 +166,10 @@ tlv_reply_t make_transfer(tlv_request_t request)
           header.ret_code = RC_OP_NALLOW;
       }
       else
-        header.ret_code = RC_ID_NOT_FOUND;
+        header.ret_code = RC_LOGIN_FAIL;
     }
     else
-      header.ret_code = RC_LOGIN_FAIL;
+      header.ret_code = RC_ID_NOT_FOUND;
   }
   else
   {
