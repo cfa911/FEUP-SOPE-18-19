@@ -7,8 +7,10 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include <unistd.h>
 #include "../constants.h"
 #include "../types.h"
+#include "../sope.h"
 
 //codigos das operacoes:
 // 0 - criacao de contas
@@ -81,6 +83,27 @@ int main(int argc, char *argv[])
   unlink(USER_FIFO_PATH);
   close(fifo_user);
   close(fifo_server);
+
+  int ulog = open(USER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0664);
+
+  if(ulog < 0){
+    perror("Error opening user log file!\n");
+    exit(0);
+  }
+
+  int saved_stdout = dup(STDOUT_FILENO);
+  dup2(ulog, STDOUT_FILENO);
+
+  const tlv_reply_t* tlv_reply_ptr;
+  tlv_reply_ptr = &reply;
+  logReply(fifo_user, getpid(), tlv_reply_ptr);
+
+  close(ulog);
+
+  dup2(saved_stdout, STDOUT_FILENO);
+  close(saved_stdout);
+
+
 }
 
 void print_usage(FILE *stream, char *progname)
