@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include "../constants.h"
 #include "../types.h"
-#include "../sope.h"
+#include "../log.c"
 
 //codigos das operacoes:
 // 0 - criacao de contas
@@ -92,19 +92,23 @@ int main(int argc, char *argv[])
   }
 
   int saved_stdout = dup(STDOUT_FILENO);
-  dup2(ulog, STDOUT_FILENO);
+  //dup2(ulog, STDOUT_FILENO);
 
   const tlv_reply_t* tlv_reply_ptr;
   tlv_reply_ptr = &reply;
-  logReply(fifo_user, getpid(), tlv_reply_ptr);
+  const tlv_request_t* tlv_request_ptr;
+  tlv_request_ptr = &request;
+
+  logRequest(fifo_user, pid, tlv_request_ptr);
+  logReply(fifo_user, pid, tlv_reply_ptr);
 
   close(ulog);
 
   dup2(saved_stdout, STDOUT_FILENO);
   close(saved_stdout);
-
-
+  
 }
+
 
 void print_usage(FILE *stream, char *progname)
 {

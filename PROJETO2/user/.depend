@@ -1,2 +1,2 @@
 #MAKE .DEPEND FILE
-user.o: user.c user.h ../types.h ../constants.h
+user.o: user.c user.h ../types.h ../constants.h ../log.c ../sope.h
