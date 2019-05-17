@@ -2,4 +2,4 @@
 account.o: account.c ../types.h ../constants.h server.h thread_function.h \
  account.h
 thread_function.o: thread_function.c thread_function.h
-server.o: server.c server.h ../constants.h ../types.h thread_function.h
+server.o: server.c server.h ../types.h ../constants.h thread_function.h
