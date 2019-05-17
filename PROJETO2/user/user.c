@@ -178,10 +178,9 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
 
   tlv_request_t request;
   request.type = OP_CREATE_ACCOUNT;
-  request.length = sizeof user_info + sizeof new_account;
   request.value.header = user_info;
   request.value.create = new_account;
-
+  request.length = sizeof request;
   return request;
 }
 tlv_request_t check_balance(char *user, char *password, char *delay, char *args, int pid)
@@ -191,11 +190,11 @@ tlv_request_t check_balance(char *user, char *password, char *delay, char *args,
   strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
-
+  
   tlv_request_t request;
   request.type = OP_BALANCE;
   request.value.header = user_info;
-  request.length = sizeof user_info;
+  request.length = sizeof request;
 
   // send request t
   return request;
@@ -260,9 +259,9 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
 
   tlv_request_t request;
   request.type = OP_TRANSFER;
-  request.length = sizeof user_info + sizeof transfer;
   request.value.header = user_info;
   request.value.transfer = transfer;
+    request.length = sizeof request;
   // Make send the struct
   return request;
 }
@@ -277,8 +276,8 @@ tlv_request_t shutdown_server(char *id, char *password, char *delay, char *args,
 
   tlv_request_t request;
   request.type = OP_SHUTDOWN;
-  request.length = sizeof user_info;
   request.value.header = user_info;
+    request.length = sizeof request;
   // Make send the struct
   return request;
 }

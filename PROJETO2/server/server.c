@@ -91,7 +91,6 @@ int main(int argc, char *argv[])
     threads[i] = tid;
   }
 
-
   //read info from user
   //char fifo_user_name[USER_FIFO_PATH_LEN];
   while (1) //TILL SHUTDOWN
@@ -102,11 +101,10 @@ int main(int argc, char *argv[])
       //put request in queue;
 
       sem_wait(&empty);
-      
+
       printf("Enters main read\n");
       push(&q, request);
       printf("Pushes request \n");
-
       sem_post(&full);
       /*
       memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
@@ -207,7 +205,7 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   strcat(code, " | sha256sum");
   command_hash = popen(code, "r");
   fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
-  if (strcmp(hash, desired_hash) == 0) //same password
+  if (strcmp(hash, desired_hash) == 0)     //same password
     return true;
   else
     return false;

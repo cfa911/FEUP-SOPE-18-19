@@ -39,6 +39,7 @@ void *thread_function(void *args)
             //process request
 
             reply = process_reply(request);
+            sleep(request.value.header.op_delay_ms/1000);
             ret_code = reply.value.header.ret_code;
             operation = reply.type;
             if (ret_code == RC_OK)
