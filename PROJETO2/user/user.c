@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
   }
 
   int saved_stdout = dup(STDOUT_FILENO);
-  //dup2(ulog, STDOUT_FILENO);
+  dup2(STDOUT_FILENO, ulog);
 
   const tlv_reply_t* tlv_reply_ptr;
   tlv_reply_ptr = &reply;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
   close(ulog);
 
-  dup2(saved_stdout, STDOUT_FILENO);
+  dup2(STDOUT_FILENO,saved_stdout);
   close(saved_stdout);
   
 }

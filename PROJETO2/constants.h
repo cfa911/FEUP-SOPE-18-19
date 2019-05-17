@@ -24,8 +24,8 @@
 #define WIDTH_TLV_LEN 3
 #define WIDTH_STARTEND 5
 
-#define SERVER_LOGFILE "slog.txt"
-#define USER_LOGFILE "ulog.txt"
+#define SERVER_LOGFILE "../slog.txt"
+#define USER_LOGFILE "../ulog.txt"
 
 #define SERVER_FIFO_PATH "/tmp/secure_srv"
 #define USER_FIFO_PATH_PREFIX "/tmp/secure_"
