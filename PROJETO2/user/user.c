@@ -24,8 +24,7 @@ int main(int argc, char *argv[])
   int pid = getpid();
 
   struct tlv_request request; //request structure
-  struct tlv_reply reply; //reply structure
-
+  struct tlv_reply reply;     //reply structure
 
   if (argc != 6)
   {
@@ -72,11 +71,10 @@ int main(int argc, char *argv[])
     return 0;
     break;
   }
-
-  while (read(fifo_user,&reply,sizeof reply) <= 0)
+  printf(" REQUEST: %i ", request.value.header.pid);
+  write(fifo_server, &request, request.length);
+  while (read(fifo_user, &reply, sizeof reply) <= 0)
   {
-    printf(" REQUEST: %i ", request.value.header.pid);
-    write(fifo_server, &request, request.length);
   }
   //process reply
   unlink(USER_FIFO_PATH);
@@ -98,12 +96,6 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
 {
   int i = 0;
   char *tmp_str;
-
-  if (strcmp(user, "0") != 0)
-  {
-    perror("Error: Not Admin!! Can't create accounts\n");
-    exit(1);
-  }
 
   req_create_account_t new_account;
   tmp_str = strtok(args, " "); //1st element

@@ -5,6 +5,7 @@
 #include "../constants.h"
 #include "../types.h"
 #include "thread_function.h"
+#include "account.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,8 +24,5 @@ bool check_hash(char *password, char *salt, char *desired_hash);
 void sigint_handler(int sig);
 char *hashing_func(char *password);
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
-
-
-
 
 #endif  // _SERVER_H_

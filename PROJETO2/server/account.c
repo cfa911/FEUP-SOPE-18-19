@@ -4,11 +4,66 @@
 #include "account.h"
 #include "../constants.h"
 
-tlv_reply_t create_acount(tlv_request_t request)
+tlv_reply_t process_reply(tlv_request_t request)
 {
+  tlv_reply_t reply;
+  switch (request.type)
+  {
+  case OP_CREATE_ACCOUNT:
+    return create_account(request);
+    break;
+  case OP_BALANCE:
+    return check_balance(request);
+    break;
+  case OP_TRANSFER:
+    return make_transfer(request);
+    break;
+  case OP_SHUTDOWN:
+    return server_shutdown(request);
+    break;
+  default:
+    return reply;
+    break;
+  }
+}
+
+tlv_reply_t create_account(tlv_request_t request)
+{
+  tlv_reply_t reply;
+  rep_value_t value;
+  rep_header_t header;
+  int id = request.value.header.account_id;
+
+  header.account_id = request.value.header.account_id;
+  value.header = header;
+  reply.length = sizeof(value);
+  reply.value = value;
+  reply.type = OP_CREATE_ACCOUNT;
+  if (account_exists(request)) //RC_ID_IN_USE  conta  existente
+  {
+    header.ret_code = RC_ID_IN_USE;
+  }
+  else
+  {
+    if (check_hash(request.value.header.password, accounts[id].salt, accounts[id].hash))
+    {
+      if (id == 0)
+      { //IS ADMIN
+        header.ret_code = RC_OK;
+      }
+      else if(id != 0)
+      {
+        header.ret_code = RC_OP_NALLOW;
+      }
+    }
+    else
+    {
+      header.ret_code = RC_LOGIN_FAIL;
+    }
+  }
+  return reply;
   //RC_OK
   //RC_OP_NALLOW  pedido realizado  por  um  cliente
-  //RC_ID_IN_USE  conta  existente
   //RC_OTHER  erro  não  especificado
 }
 

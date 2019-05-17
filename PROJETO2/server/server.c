@@ -1,6 +1,7 @@
 #include "server.h"
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
   int fifo_server;
   int fifo_user;
@@ -54,17 +55,17 @@ int main(int argc, char *argv[]){
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
 
-
   //criar fifo secure_srv
   if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
   {
-    fprintf(stderr, "Error creating secure_srv fifo\n");
+    fprintf(stderr, "Error creating secure_srv fifo. Restart the program\n");
+    unlink(SERVER_FIFO_PATH);
     return -3;
   }
   fifo_server = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
   if (fifo_server == -1)
   {
-    printf("Error opening FIFO\n");
+    printf("Error opening FIFO. \n");
     return -1;
   }
   struct tlv_request request;
@@ -99,14 +100,13 @@ int main(int argc, char *argv[]){
   {
     if (read(fifo_server, &request, sizeof(request)) > 0)
     {
+      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
       printf("\nPID:%i\n", request.value.header.pid);
       printf("DELAY:%i\n", request.value.header.op_delay_ms);
       printf("account_id:%i\n", request.value.header.account_id);
 
       //open fifo_user
-      sprintf(user_pid, "%i", request.value.header.pid); // int to string
-      strcat(fifo_user_name, "/tmp/secure_");
-      strcat(fifo_user_name, user_pid);
+      sprintf(fifo_user_name, "/tmp/secure_%d", request.value.header.pid); // int to string
 
       fifo_user = open(fifo_user_name, O_WRONLY | O_NONBLOCK);
 
@@ -121,18 +121,12 @@ int main(int argc, char *argv[]){
 
       //process request
 
-      rep_value_t reply_value;
-
-      reply.length = sizeof reply;
-      reply.type = request.type;
-      reply.value = reply_value; 
-      //TODO:
+      reply = process_reply(request);
 
       write(fifo_user, &reply, sizeof reply);
       printf("Message sent to fifo user: %s \n", fifo_user_name);
 
       close(fifo_user);
-      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
     }
   }
 
