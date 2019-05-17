@@ -1,24 +1,6 @@
-#include <stdio.h>
 #include "server.h"
-#include "../constants.h"
-#include "../types.h"
-#include "thread_function.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
-#include <signal.h>
 
-bank_account_t accounts[MAX_BANK_ACCOUNTS];
-
-int main(int argc, char *argv[])
-{
-  char TMP_USER_FIFO_PATH[USER_FIFO_PATH_LEN] = "/tmp/secure_";
+int main(int argc, char *argv[]){
 
   int fifo_server;
   int fifo_user;
@@ -52,25 +34,23 @@ int main(int argc, char *argv[])
   action.sa_flags = 0;
   sigaction(SIGINT, &action, NULL);
 
-
   char *a = hashingFunc(argv[2]);
-  char hash[HASH_LEN +1];
-  char saltes[SALT_LEN +1];
+  char hash[HASH_LEN + 1];
+  char saltes[SALT_LEN + 1];
 
-  char *tmp; 
-  tmp = strtok(a," ");
-  strcpy(hash,tmp);
-  tmp = strtok(NULL," ");
-  strcpy(saltes,tmp);
+  char *tmp;
+  tmp = strtok(a, " ");
+  strcpy(hash, tmp);
+  tmp = strtok(NULL, " ");
+  strcpy(saltes, tmp);
 
   // CRIAR CONTA ADMINISTRADOR
-  bank_account_t admin_account;
+  struct bank_account admin_account;
   admin_account.account_id = ADMIN_ACCOUNT_ID;
   admin_account.balance = 0;
 
-  strcpy(admin_account.hash, hash);       //output is hashed password
-  strcpy(admin_account.salt, saltes);         //the Salt
-
+  strcpy(admin_account.hash, hash);   //output is hashed password
+  strcpy(admin_account.salt, saltes); //the Salt
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
 
@@ -144,7 +124,8 @@ int main(int argc, char *argv[])
 
       reply.length = sizeof reply;
       reply.type = request.type;
-      reply.value = reply_value;
+      reply.value = reply_value; 
+      //TODO:
 
       write(fifo_user, &reply, sizeof reply);
       printf("Message sent to fifo user: %s \n", fifo_user_name);
@@ -159,11 +140,11 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-char * hashingFunc(char *password)
+char *hashingFunc(char *password)
 {
-  FILE *commandHash;
+  FILE *command_hash;
   srand(time(NULL)); //Randomize time
-  char *values = malloc(65*2*sizeof(char));
+  char *values = malloc(65 * 2 * sizeof(char));
   //GENERATE SALT
   int MAX_NUMBER = pow(2, 30);
   int salt_number = rand() % MAX_NUMBER + 1;
@@ -175,21 +156,38 @@ char * hashingFunc(char *password)
   char code[30] = "echo -n ";
   char output[HASH_LEN + 1];
   sprintf(salt, "%i", salt_number);
-  strcpy(values,salt);
+  strcpy(values, salt);
 
   strcat(code, password); // password
   strcat(code, " ");
   strcat(code, salt); //salt
   strcat(code, " | sha256sum");
-  commandHash = popen(code, "r");
-  fgets(output, HASH_LEN + 1, commandHash); //read 64 bytes
-/*
-  strcpy(admin_account.hash, output);       //output is hashed password
-  strcpy(admin_account.salt, salt);         //the Salt
-*/
-  strcat(values," ");
-  strcat(values,output);
+  command_hash = popen(code, "r");
+  fgets(output, HASH_LEN + 1, command_hash); //read 64 bytes
+
+  strcat(values, " ");
+  strcat(values, output);
   return values;
+}
+
+bool check_hash(char *password, char *salt, char *desired_hash)
+{
+  FILE *command_hash;
+  //code
+  char code[30] = "echo -n ";
+  char hash[HASH_LEN + 1];
+
+  strcat(code, password); // password
+  strcat(code, " ");
+  strcat(code, salt); //salt
+  strcat(code, " | sha256sum");
+  command_hash = popen(code, "r");
+  fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
+
+  if (strcmp(hash, desired_hash) == 0) //same password
+    return true;
+  else
+    return false;
 }
 
 // void validateAccount(tlv_request_t request){
@@ -202,17 +200,34 @@ char * hashingFunc(char *password)
 //     }
 //   }
 // }
-bool validateAccount(tlv_request_t request){
 
-  for(int i = 0; accounts[i] != '\0'; i++){
-    if (request.value.header.account_id == accounts.account_id[i]){
-        //fazer HASH PASSWORD
-        return true;
-    } else{
-      perror("ERROR: Account doesn't exist\n");
-    }
+bool account_exists(tlv_request_t request)
+{
+
+  int id = request.value.header.account_id;
+
+  if (accounts[id].hash[0] == '\0') //Checks if its null
+  {
+    printf("ACCOUNT DOESN'T EXIST\n");
+    return false;
   }
-  return false;
+  else
+  {
+    printf("ACCOUNT DOES EXIST\n");
+
+    return true;
+  }
+}
+bool check_login(tlv_request_t request)
+{
+  int id = request.value.header.account_id;
+  char *password = request.value.header.password;
+  char *hash = accounts[id].hash;
+  char *salt = accounts[id].salt;
+  if (check_hash(password, salt, hash))
+    return true;
+  else
+    return false;
 }
 
 void sigint_handler(int sig)

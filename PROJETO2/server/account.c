@@ -17,7 +17,7 @@ rep_value_t value;
 rep_header_t header;
 rep_balance_t balance;
 
-if(validateAccount(request)){
+if(account_exists(request)){
   reply.type = RC_OK;
   //balance.balance = accounts[request.value.header.account_id].balance;
  //header = request.value.header;
