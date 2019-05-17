@@ -89,17 +89,19 @@ int main(int argc, char *argv[])
     }
     threads[i] = tid;
   }
-  while (!OP_SHUTDOWN) //TILL SHUTDOWN
+  while (!CLOSE_FIFO_SERVER) //TILL SHUTDOWN
   {
     if (read(fifo_server, &request, sizeof(request)) > 0)
     {
 
       //put request in queue;
-
+      
       sem_wait(&empty);
+      //usleep(10);
       push(&q, request);
       printf("Pushes request %d\n",request.value.header.pid);
       sem_post(&full);
+
 
     }
   }
@@ -107,7 +109,7 @@ int main(int argc, char *argv[])
   {
     if (pthread_join(threads[i], NULL) != 0)
     {
-      printf("Error Waiting for bank offices");
+      printf("Error Waiting fort bank offices");
       exit(1);
     }
   }
