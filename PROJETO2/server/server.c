@@ -5,7 +5,9 @@ int main(int argc, char *argv[])
 {
 
   int fifo_server;
-  int fifo_user;
+  CLOSE_FIFO_SERVER = 0;
+  init(&q);
+
   // CHAIN OF REQUIREMENTS
   if (argc != 3)
   {
@@ -70,12 +72,17 @@ int main(int argc, char *argv[])
     return -1;
   }
   struct tlv_request request;
-  struct tlv_reply reply;
+
+  sem_init(&empty, SHARED, atoi(argv[1])); /* sem empty = atoi(argv[1]) */
+
+  sem_init(&full, SHARED, 0); /* sem full = 0  */
 
   pthread_t threads[MAX_BANK_OFFICES];
+
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
     pthread_t tid;
+    //if (pthread_create(&tid, NULL, thread_function, &i) != 0)
     if (pthread_create(&tid, NULL, thread_function, &i) != 0)
     {
       printf("Error creating bank offices");
@@ -84,27 +91,23 @@ int main(int argc, char *argv[])
     threads[i] = tid;
   }
 
-  for (size_t i = 0; i < atoi(argv[1]); i++) // Waits for threads/balcoes eletronicos
-  {
-    if (pthread_join(threads[i], NULL) != 0)
-    {
-      printf("Error waiting for bank offices");
-      exit(1);
-    }
-  }
 
   //read info from user
-  char fifo_user_name[USER_FIFO_PATH_LEN];
-
-  while (1)
+  //char fifo_user_name[USER_FIFO_PATH_LEN];
+  while (1) //TILL SHUTDOWN
   {
     if (read(fifo_server, &request, sizeof(request)) > 0)
     {
-      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
-      printf("\nPID:%i\n", request.value.header.pid);
-      printf("DELAY:%i\n", request.value.header.op_delay_ms);
-      printf("account_id:%i\n", request.value.header.account_id);
 
+      //put request in queue;
+
+      sem_trywait(&empty);
+      printf("Entras ca\n");
+      push(&q, request);
+      printf("Tb Entras ca");
+      sem_post(&full);
+      /*
+      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
       //open fifo_user
       sprintf(fifo_user_name, "/tmp/secure_%d", request.value.header.pid); // int to string
 
@@ -120,13 +123,13 @@ int main(int argc, char *argv[])
       }
 
       //process request
-
+      
       reply = process_reply(request);
 
       write(fifo_user, &reply, sizeof reply);
       printf("Message sent to fifo user: %s \n", fifo_user_name);
 
-      close(fifo_user);
+      close(fifo_user);*/
     }
   }
 
@@ -193,10 +196,9 @@ bool check_hash(char *password, char *salt, char *desired_hash)
 {
   FILE *command_hash;
 
-  printf("password: %s\n",password);
-  printf("salt: %s\n",salt);
-  printf("desired_hash: %s\n",desired_hash);
-
+  printf("password: %s\n", password);
+  printf("salt: %s\n", salt);
+  printf("desired_hash: %s\n", desired_hash);
 
   //code
   char code[30] = "echo -n ";
@@ -208,7 +210,7 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   strcat(code, " | sha256sum");
   command_hash = popen(code, "r");
   fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
-  printf("result_hash: %s\n",hash);
+  printf("result_hash: %s\n", hash);
 
   if (strcmp(hash, desired_hash) == 0) //same password
     return true;
