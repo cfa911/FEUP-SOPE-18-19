@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 
   int fifo_server;
   CLOSE_FIFO_SERVER = 0;
-  init(&q);
+  init(&q); // STARTS THE QUEUE
 
   // CHAIN OF REQUIREMENTS
   if (argc != 3)
@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
     pthread_t tid;
-    //if (pthread_create(&tid, NULL, thread_function, &i) != 0)
     if (pthread_create(&tid, NULL, thread_function, &i) != 0)
     {
       printf("Error creating bank offices");
@@ -90,10 +89,7 @@ int main(int argc, char *argv[])
     }
     threads[i] = tid;
   }
-
-  //read info from user
-  //char fifo_user_name[USER_FIFO_PATH_LEN];
-  while (1) //TILL SHUTDOWN
+  while (!OP_SHUTDOWN) //TILL SHUTDOWN
   {
     if (read(fifo_server, &request, sizeof(request)) > 0)
     {
@@ -101,35 +97,18 @@ int main(int argc, char *argv[])
       //put request in queue;
 
       sem_wait(&empty);
-
-      printf("Enters main read\n");
       push(&q, request);
-      printf("Pushes request \n");
+      printf("Pushes request %d\n",request.value.header.pid);
       sem_post(&full);
-      /*
-      memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
-      //open fifo_user
-      sprintf(fifo_user_name, "/tmp/secure_%d", request.value.header.pid); // int to string
 
-      fifo_user = open(fifo_user_name, O_WRONLY | O_NONBLOCK);
-
-      if (fifo_user < 0)
-      {
-        printf("Error: Failed to open user fifo user: %s\n", fifo_user_name);
-      }
-      else
-      {
-        printf("fifo user: %s opened\n", fifo_user_name);
-      }
-
-      //process request
-      
-      reply = process_reply(request);
-
-      write(fifo_user, &reply, sizeof reply);
-      printf("Message sent to fifo user: %s \n", fifo_user_name);
-
-      close(fifo_user);*/
+    }
+  }
+  for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
+  {
+    if (pthread_join(threads[i], NULL) != 0)
+    {
+      printf("Error Waiting for bank offices");
+      exit(1);
     }
   }
 
