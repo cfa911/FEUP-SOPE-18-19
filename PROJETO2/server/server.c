@@ -1,4 +1,5 @@
 #include "server.h"
+#include "../log.c"
 
 int main(int argc, char *argv[])
 {
@@ -131,6 +132,30 @@ int main(int argc, char *argv[])
 
   close(fifo_server);
   unlink(SERVER_FIFO_PATH);
+
+  // int slog = open(SERVER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0664);
+
+  // if(slog < 0){
+  //   perror("Error opening user log file!\n");
+  //   exit(0);
+  // }
+
+  // const tlv_reply_t* tlv_reply_ptr;
+  // tlv_reply_ptr = &reply;
+  // const tlv_request_t* tlv_request_ptr;
+  // tlv_request_ptr = &request;
+
+  // int saved_stdout = dup(STDOUT_FILENO);
+  // dup2(slog, STDOUT_FILENO);
+
+  // logRequest(fifo_user, getpid(), tlv_request_ptr);
+  // logReply(fifo_user, getpid(), tlv_reply_ptr);
+
+  // close(slog);
+
+  // dup2(saved_stdout, STDOUT_FILENO);
+  // close(saved_stdout);
+
   return 0;
 }
 

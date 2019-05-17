@@ -91,22 +91,23 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  int saved_stdout = dup(STDOUT_FILENO);
-  dup2(STDOUT_FILENO, ulog);
-
   const tlv_reply_t* tlv_reply_ptr;
   tlv_reply_ptr = &reply;
   const tlv_request_t* tlv_request_ptr;
   tlv_request_ptr = &request;
+
+  int saved_stdout = dup(STDOUT_FILENO);
+  dup2(ulog, STDOUT_FILENO);
 
   logRequest(fifo_user, pid, tlv_request_ptr);
   logReply(fifo_user, pid, tlv_reply_ptr);
 
   close(ulog);
 
-  dup2(STDOUT_FILENO,saved_stdout);
-  close(saved_stdout);
-  
+    dup2(saved_stdout, STDOUT_FILENO);
+   close(saved_stdout);
+
+  return 0;
 }
 
 
