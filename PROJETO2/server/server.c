@@ -101,10 +101,12 @@ int main(int argc, char *argv[])
 
       //put request in queue;
 
-      sem_trywait(&empty);
-      printf("Entras ca\n");
+      sem_wait(&empty);
+      
+      printf("Enters main read\n");
       push(&q, request);
-      printf("Tb Entras ca");
+      printf("Pushes request \n");
+
       sem_post(&full);
       /*
       memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
@@ -195,11 +197,6 @@ char *hashing_func(char *password)
 bool check_hash(char *password, char *salt, char *desired_hash)
 {
   FILE *command_hash;
-
-  printf("password: %s\n", password);
-  printf("salt: %s\n", salt);
-  printf("desired_hash: %s\n", desired_hash);
-
   //code
   char code[30] = "echo -n ";
   char hash[HASH_LEN + 1];
@@ -210,8 +207,6 @@ bool check_hash(char *password, char *salt, char *desired_hash)
   strcat(code, " | sha256sum");
   command_hash = popen(code, "r");
   fgets(hash, HASH_LEN + 1, command_hash); //read 64 bytes
-  printf("result_hash: %s\n", hash);
-
   if (strcmp(hash, desired_hash) == 0) //same password
     return true;
   else

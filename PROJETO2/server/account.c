@@ -6,24 +6,26 @@
 
 tlv_reply_t process_reply(tlv_request_t request)
 {
-  switch (request.type)
+  tlv_reply_t reply;
+  switch ((int)request.type)
   {
   case OP_CREATE_ACCOUNT:
-    return create_account(request);
+    reply = request_create_account(request);
     break;
   case OP_BALANCE:
-    return check_balance(request);
+    reply = request_check_balance(request);
     break;
   case OP_TRANSFER:
-    return make_transfer(request);
+    reply = request_make_transfer(request);
     break;
   case OP_SHUTDOWN:
-    return server_shutdown(request);
+    reply = request_server_shutdown(request);
     break;
   }
+  return reply;
 }
 
-tlv_reply_t create_account(tlv_request_t request)
+tlv_reply_t request_create_account(tlv_request_t request)
 {
   tlv_reply_t reply;
   rep_value_t value;
@@ -71,7 +73,7 @@ tlv_reply_t create_account(tlv_request_t request)
   //RC_OTHER  erro  não  especificado
 }
 
-tlv_reply_t check_balance(tlv_request_t request)
+tlv_reply_t request_check_balance(tlv_request_t request)
 {
 
   tlv_reply_t reply;
@@ -112,7 +114,7 @@ tlv_reply_t check_balance(tlv_request_t request)
   return reply;
 }
 
-tlv_reply_t make_transfer(tlv_request_t request)
+tlv_reply_t request_make_transfer(tlv_request_t request)
 {
 
   tlv_reply_t reply;
@@ -185,7 +187,7 @@ tlv_reply_t make_transfer(tlv_request_t request)
   return reply;
 }
 
-tlv_reply_t server_shutdown(tlv_request_t request)
+tlv_reply_t request_server_shutdown(tlv_request_t request)
 {
 
   tlv_reply_t reply;
@@ -203,7 +205,8 @@ tlv_reply_t server_shutdown(tlv_request_t request)
       else
         header.ret_code = RC_OP_NALLOW; //pedido realizado por um cliente
     }
-    else{
+    else
+    {
       header.ret_code = RC_LOGIN_FAIL;
     }
   }
@@ -219,4 +222,43 @@ tlv_reply_t server_shutdown(tlv_request_t request)
   reply.value = value;
   reply.length = sizeof reply;
   return reply;
+}
+
+void create_account(tlv_request_t request)
+{
+  bank_account_t new_account;
+  int id = new_account.account_id = request.value.create.account_id;
+
+  new_account.balance = request.value.create.balance;
+  char *password = request.value.create.password;
+
+  char *a = hashing_func(password);
+  char hash[HASH_LEN + 1];
+  char salt[SALT_LEN + 1];
+
+  char *tmp;
+  tmp = strtok(a, " ");
+  strcpy(salt, tmp);
+  tmp = strtok(NULL, " ");
+  strcpy(hash, tmp);
+
+  strcpy(new_account.salt, salt);
+  strcpy(new_account.hash, hash);
+  accounts[id] = new_account;
+}
+void make_transfer(tlv_request_t request)
+{
+  int id1 = request.value.header.account_id;
+  int id2 = request.value.transfer.account_id;
+
+  int balance_1 = accounts[id1].balance;
+  int balance_2 = accounts[id2].balance;
+
+  int amount = request.value.transfer.amount;
+  accounts[id2].balance += amount;
+  accounts[id1].balance -= amount;
+
+}
+void server_shutdown(tlv_request_t request)
+{
 }

@@ -35,8 +35,6 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  printf("Process pid %i\n", pid);
-
   if (fifo_server < 0)
   {
     perror("Error: Failed to open server fifo\n");
@@ -73,12 +71,10 @@ int main(int argc, char *argv[])
     return 0;
     break;
   }
-  printf(" REQUEST: %i \n", request.value.header.pid);
   write(fifo_server, &request, request.length);
   while (read(fifo_user, &reply, sizeof reply) <= 0)
   {
   }
-  printf("\n%d\n", reply.value.header.ret_code);
   //process reply
   unlink(USER_FIFO_PATH);
   close(fifo_user);
@@ -86,14 +82,15 @@ int main(int argc, char *argv[])
 
   int ulog = open(USER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0664);
 
-  if(ulog < 0){
+  if (ulog < 0)
+  {
     perror("Error opening user log file!\n");
     exit(0);
   }
 
-  const tlv_reply_t* tlv_reply_ptr;
+  const tlv_reply_t *tlv_reply_ptr;
   tlv_reply_ptr = &reply;
-  const tlv_request_t* tlv_request_ptr;
+  const tlv_request_t *tlv_request_ptr;
   tlv_request_ptr = &request;
 
   int saved_stdout = dup(STDOUT_FILENO);
@@ -104,12 +101,11 @@ int main(int argc, char *argv[])
 
   close(ulog);
 
-    dup2(saved_stdout, STDOUT_FILENO);
-   close(saved_stdout);
+  dup2(saved_stdout, STDOUT_FILENO);
+  close(saved_stdout);
 
   return 0;
 }
-
 
 void print_usage(FILE *stream, char *progname)
 {
@@ -127,7 +123,14 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
   char *tmp_str;
 
   req_create_account_t new_account;
+
   tmp_str = strtok(args, " "); //1st element
+  if (tmp_str == NULL)
+  {
+    printf("ERROR: NO ARGUMENTS ON ACCOUNT CREATION\n");
+    exit(1);
+  }
+
   new_account.account_id = atoi(tmp_str);
   tmp_str = strtok(NULL, " ");
   while (tmp_str != NULL)
@@ -145,7 +148,7 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
     }
     else
     {
-      perror("ERROR: TOO MANY ARGUMENTS ON ACCOUNT CREATION\n");
+      printf("ERROR: TOO MANY ARGUMENTS ON ACCOUNT CREATION\n");
       exit(3);
     }
     tmp_str = strtok(NULL, " ");
@@ -153,7 +156,7 @@ tlv_request_t create_account(char *user, char *password, char *delay, char *args
   }
   if (i != 2)
   {
-    perror("ERROR: TOO LITTLE ARGUMENTS ON ACCOUNT CREATION\n");
+    printf("ERROR: TOO LITTLE ARGUMENTS ON ACCOUNT CREATION\n");
     exit(4);
   }
 
@@ -206,7 +209,7 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
   int amount = 0;
   if (strcmp(args, "") == 0)
   {
-    perror("ERROR: NO ARGUMENTS!!\n");
+    printf("ERROR: NO ARGUMENTS!!\n");
     exit(0);
   }
   tmp_str = strtok(args, " ");
@@ -224,19 +227,19 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
     tmp_str = strtok(NULL, " ");
     if (tmp_str != NULL)
     {
-      perror("ERROR: NOT ENOUGHT ARGUMENTS");
+      printf("ERROR: TOO MANY ARGUMENTS\n");
       exit(1);
     }
 
     if (amount < MIN_BALANCE || amount > MAX_BALANCE)
     {
-      perror("Error: INVALID amount! Invalid transfer!\n");
+      printf("Error: INVALID amount! Invalid transfer!\n");
       exit(0);
     }
   }
   else
   {
-    perror("Error: Empty Recipient! Can't conclude transfer\n");
+    printf("Error: Empty Recipient! Can't conclude transfer\n");
     exit(0);
   }
 

@@ -1,6 +1,8 @@
 #MAKE .DEPEND FILE
+queue.o: queue.c queue.h ../types.h ../constants.h
 account.o: account.c ../types.h ../constants.h server.h thread_function.h \
- account.h
-thread_function.o: thread_function.c thread_function.h
+ account.h queue.h
+thread_function.o: thread_function.c thread_function.h server.h \
+ ../constants.h ../types.h account.h queue.h
 server.o: server.c server.h ../constants.h ../types.h thread_function.h \
- account.h ../log.c ../sope.h
+ account.h queue.h ../log.c ../sope.h

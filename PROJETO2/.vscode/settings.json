@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "thread_function.h": "c",
+        "typeinfo": "c",
+        "stdio.h": "c",
+        "server.h": "c"
+    }
+}
