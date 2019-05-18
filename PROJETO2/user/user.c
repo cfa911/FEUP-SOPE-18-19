@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "user.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -9,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "../constants.h"
+#include "user.h"
 #include "../types.h"
 #include "../log.c"
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
   struct tlv_request request; //request structure
   struct tlv_reply reply;     //reply structure
-
+  pthread_t thread;
   if (argc != 6)
   {
     printf("Wrong number of arguments\n");
@@ -72,15 +72,19 @@ int main(int argc, char *argv[])
     break;
   }
   write(fifo_server, &request, request.length);
+  int i = 0;
+  pthread_create(&thread, NULL, waiting_thread, &i); //creates wait
   while (read(fifo_user, &reply, sizeof reply) <= 0)
   {
+    if(i == 30)
+    break;
   }
   //process reply
   unlink(USER_FIFO_PATH);
   close(fifo_user);
   close(fifo_server);
 
-  int ulog = open(USER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0664);
+  int ulog = open(USER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0660);
 
   if (ulog < 0)
   {

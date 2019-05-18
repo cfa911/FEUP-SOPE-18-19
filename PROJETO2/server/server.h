@@ -1,11 +1,12 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
-#include <stdbool.h>
+
 #include "../constants.h"
 #include "../types.h"
-#include "thread_function.h"
+#include "bank_thread.h"
 #include "account.h"
+#include "queue.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -17,7 +18,7 @@
 #include <time.h>
 #include <signal.h>
 #include <stdio.h>
-#include "queue.h"
+#include <stdbool.h>
 #include <semaphore.h>
 
 #define SHARED 0

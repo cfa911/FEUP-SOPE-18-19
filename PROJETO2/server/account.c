@@ -249,14 +249,12 @@ void make_transfer(tlv_request_t request)
 {
   int id1 = request.value.header.account_id;
   int id2 = request.value.transfer.account_id;
-
-  int balance_1 = accounts[id1].balance;
-  int balance_2 = accounts[id2].balance;
-
   int amount = request.value.transfer.amount;
   accounts[id2].balance += amount;
   accounts[id1].balance -= amount;
 }
 void server_shutdown(tlv_request_t request)
 {
+  chmod(SERVER_FIFO_PATH, S_IRUSR | S_IRGRP | S_IROTH);
+  CLOSE_FIFO_SERVER = 1;
 }

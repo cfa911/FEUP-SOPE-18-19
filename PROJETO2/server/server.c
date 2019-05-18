@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
     pthread_t tid;
-    if (pthread_create(&tid, NULL, thread_function, &i) != 0)
+    if (pthread_create(&tid, NULL, bank_thread, &i) != 0)
     {
       printf("Error creating bank offices");
       exit(1);
@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
 
     }
   }
+  /*
   for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
   {
     if (pthread_join(threads[i], NULL) != 0)
@@ -112,8 +113,13 @@ int main(int argc, char *argv[])
       printf("Error Waiting fort bank offices");
       exit(1);
     }
+    else
+    {
+     printf("THREAD N %i: CLOSED\n",i);
+    }
+    
   }
-
+*/
   close(fifo_server);
   unlink(SERVER_FIFO_PATH);
 

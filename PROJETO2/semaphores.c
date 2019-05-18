@@ -2,7 +2,7 @@
 #include "server.h"
 #include "constants.h"
 #include "types.h"
-#include "thread_function.h"
+#include "bank_thread.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
