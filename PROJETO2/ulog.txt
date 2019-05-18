@@ -1,0 +1,46 @@
+E - 11517 - [ 70 bytes] 11517 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 11517 - [ 12 bytes] 0000   CREATE           OK
+E - 11542 - [ 70 bytes] 11542 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 11542 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 11548 - [ 70 bytes] 11548 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 11548 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 11550 - [ 70 bytes] 11550 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 11550 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 11551 - [ 70 bytes] 11551 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 11551 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12865 - [ 70 bytes] 12865 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 12865 - [ 12 bytes] 0000   CREATE           OK
+E - 12875 - [ 70 bytes] 12875 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 12875 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12876 - [ 70 bytes] 12876 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 12876 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12877 - [ 70 bytes] 12877 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 12877 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12881 - [ 70 bytes] 12881 (0000, "12345678")             [  200 ms] CREATE   0001        200€ "password"
+R - 12881 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12883 - [ 70 bytes] 12883 (0000, "12345678")             [ 2000 ms] CREATE   0001        200€ "password"
+R - 12883 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12885 - [ 70 bytes] 12885 (0000, "12345678")             [ 2000 ms] CREATE   0001        200€ "password"
+R - 12885 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12888 - [ 70 bytes] 12888 (0000, "12345678")             [ 2000 ms] CREATE   0002        200€ "password"
+R - 12888 - [ 12 bytes] 0000   CREATE           OK
+E - 12988 - [ 70 bytes] 12988 (0000, "00000000")             [  200 ms] CREATE   0001        222€ "2123123123123"
+R - 12988 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 12992 - [ 70 bytes] 12992 (0002, "password")             [20000 ms] BALANCE 
+R - 12992 - [ 20 bytes] 0002  BALANCE           OK        200€
+E - 13064 - [ 70 bytes] 13064 (0000, "00000000")             [20000 ms] CREATE   0002       2000€ "123456789"
+E - 13070 - [ 70 bytes] 13070 (0000, "00000000")             [  200 ms] SHUTDOWN
+E - 13072 - [ 70 bytes] 13072 (0000, "00000000")             [ 8000 ms] CREATE   0002       3333€ "password"
+R - 13064 - [ 12 bytes] 0000   CREATE   LOGIN_FAIL
+R - 13070 - [ 20 bytes] 0000 SHUTDOWN   LOGIN_FAIL 280
+R - 13072 - [ 12 bytes] 0000   CREATE   LOGIN_FAIL
+E - 13088 - [ 70 bytes] 13088 (0000, "12345678")             [20000 ms] CREATE   0002       2000€ "123456789"
+E - 13118 - [ 70 bytes] 13118 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 13136 - [ 70 bytes] 13136 (0000, "12345678")             [ 8000 ms] CREATE   0002       3333€ "password"
+R - 13088 - [ 12 bytes] 0000   CREATE           OK
+R - 13118 - [ 20 bytes] 0000 SHUTDOWN           OK 280
+E - 13457 - [ 70 bytes] 13457 (0000, "00000000")             [20000 ms] CREATE   0002       2000€ "123456789"
+E - 13463 - [ 70 bytes] 13463 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 13466 - [ 70 bytes] 13466 (0000, "12345678")             [ 8000 ms] CREATE   0002       3333€ "password"
+R - 13457 - [ 12 bytes] 0000   CREATE   LOGIN_FAIL
+R - 13463 - [ 20 bytes] 0000 SHUTDOWN           OK 280

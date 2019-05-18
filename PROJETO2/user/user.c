@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <unistd.h>
-#include "../constants.h"
 #include "user.h"
-#include "../types.h"
-#include "../log.c"
-
 //codigos das operacoes:
 // 0 - criacao de contas
 // 1 - consulta de saldo
@@ -27,7 +14,7 @@ int main(int argc, char *argv[])
 
   struct tlv_request request; //request structure
   struct tlv_reply reply;     //reply structure
-  pthread_t thread;
+
   if (argc != 6)
   {
     printf("Wrong number of arguments\n");
@@ -50,7 +37,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  int fifo_user = open(USER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
+  int fifo_user = open(USER_FIFO_PATH, O_RDONLY);
 
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {
@@ -71,42 +58,48 @@ int main(int argc, char *argv[])
     return 0;
     break;
   }
-  write(fifo_server, &request, request.length);
-  int i = 0;
-  pthread_create(&thread, NULL, waiting_thread, &i); //creates wait
-  while (read(fifo_user, &reply, sizeof reply) <= 0)
-  {
-    if(i == 30)
-    break;
-  }
-  //process reply
-  unlink(USER_FIFO_PATH);
-  close(fifo_user);
-  close(fifo_server);
+  write(fifo_server, &request, request.length); //SENDS REQUEST TO SERVER FIFO
 
-  int ulog = open(USER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0660);
-
+  int ulog = open(USER_LOGFILE, O_WRONLY | O_APPEND, 0660);
   if (ulog < 0)
   {
     perror("Error opening user log file!\n");
     exit(0);
   }
 
-  const tlv_reply_t *tlv_reply_ptr;
-  tlv_reply_ptr = &reply;
   const tlv_request_t *tlv_request_ptr;
   tlv_request_ptr = &request;
+  logRequest(ulog, pid, tlv_request_ptr);
+  logRequest(STDOUT_FILENO, pid, tlv_request_ptr);
 
-  int saved_stdout = dup(STDOUT_FILENO);
-  dup2(ulog, STDOUT_FILENO);
+  //WAIT FOR RESPONSE
+  time_t start, end;
+  time(&start);
+  int i = 0;
+  while (read(fifo_user, &reply, sizeof reply) <= 0)
+  {
+    time(&end);
+    i = difftime(end, start);
 
-  logRequest(fifo_user, pid, tlv_request_ptr);
-  logReply(fifo_user, pid, tlv_reply_ptr);
+    if (i >= FIFO_TIMEOUT_SECS)
+    {
+      printf("\nFIFO TIMEOUT EXCEEDED\n");
+      break;
+    }
+  }
+  //
 
+  //process reply
+  const tlv_reply_t *tlv_reply_ptr;
+  tlv_reply_ptr = &reply;
+  logReply(ulog, pid, tlv_reply_ptr);
+  logReply(STDOUT_FILENO, pid, tlv_reply_ptr);
+  //
+
+  unlink(USER_FIFO_PATH); //removes user fifo
   close(ulog);
-
-  dup2(saved_stdout, STDOUT_FILENO);
-  close(saved_stdout);
+  close(fifo_user);
+  close(fifo_server);
 
   return 0;
 }
@@ -194,7 +187,7 @@ tlv_request_t check_balance(char *user, char *password, char *delay, char *args,
   strcpy(user_info.password, password);
   user_info.pid = pid;
   user_info.op_delay_ms = atoi(delay);
-  
+
   tlv_request_t request;
   request.type = OP_BALANCE;
   request.value.header = user_info;
@@ -265,7 +258,7 @@ tlv_request_t make_transfer(char *user1, char *password, char *delay, char *args
   request.type = OP_TRANSFER;
   request.value.header = user_info;
   request.value.transfer = transfer;
-    request.length = sizeof request;
+  request.length = sizeof request;
   // Make send the struct
   return request;
 }
@@ -281,7 +274,7 @@ tlv_request_t shutdown_server(char *id, char *password, char *delay, char *args,
   tlv_request_t request;
   request.type = OP_SHUTDOWN;
   request.value.header = user_info;
-    request.length = sizeof request;
+  request.length = sizeof request;
   // Make send the struct
   return request;
 }

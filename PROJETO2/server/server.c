@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     unlink(SERVER_FIFO_PATH);
     return -3;
   }
-  fifo_server = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
+  fifo_server = open(SERVER_FIFO_PATH, O_RDONLY);
   if (fifo_server == -1)
   {
     printf("Error opening FIFO. \n");
