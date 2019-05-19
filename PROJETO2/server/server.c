@@ -62,7 +62,9 @@ int main(int argc, char *argv[])
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
   pthread_mutex_init(&(mutex[ADMIN_ACCOUNT_ID]), NULL);
-  pthread_mutex_lock(&(mutex[ADMIN_ACCOUNT_ID]));
+  logSyncMech(fd, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid());
+  logSyncMech(STDOUT_FILENO, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid());
+
   //criar fifo secure_srv
   if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
   {
@@ -70,6 +72,8 @@ int main(int argc, char *argv[])
     unlink(SERVER_FIFO_PATH);
     return -3;
   }
+  //
+
   fifo_server = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
   if (fifo_server == -1)
   {

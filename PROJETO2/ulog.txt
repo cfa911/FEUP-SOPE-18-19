@@ -58,3 +58,148 @@ E - 27581 - [ 70 bytes] 27581 (0000, "12345678")             [  200 ms] SHUTDOWN
 R - 27581 - [ 20 bytes] 0000 SHUTDOWN           OK 0
 E - 28437 - [ 70 bytes] 28437 (0000, "12345678")             [  200 ms] SHUTDOWN
 R - 28437 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 29888 - [ 70 bytes] 29888 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 29888 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 30228 - [ 70 bytes] 30228 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 30228 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 30295 - [ 70 bytes] 30295 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 30295 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 30444 - [ 70 bytes] 30444 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 30444 - [ 12 bytes] 0000   CREATE           OK
+E - 30470 - [ 70 bytes] 30470 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 30470 - [ 12 bytes] 0000   CREATE           OK
+E - 31501 - [ 70 bytes] 31501 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 31501 - [ 12 bytes] 0000   CREATE           OK
+E - 31519 - [ 70 bytes] 31519 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31519 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31637 - [ 70 bytes] 31637 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31637 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31657 - [ 70 bytes] 31657 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31657 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31672 - [ 70 bytes] 31672 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31672 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31717 - [ 70 bytes] 31717 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31717 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31748 - [ 70 bytes] 31748 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31748 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31765 - [ 70 bytes] 31765 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31765 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31964 - [ 70 bytes] 31964 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31964 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 31989 - [ 70 bytes] 31989 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 31989 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 32016 - [ 70 bytes] 32016 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 32016 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 32478 - [ 70 bytes] 32478 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 32521 - [ 70 bytes] 32521 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 32624 - [ 70 bytes] 32624 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 32729 - [ 70 bytes] 32729 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00591 - [ 70 bytes] 00591 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00593 - [ 70 bytes] 00593 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00595 - [ 70 bytes] 00595 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00597 - [ 70 bytes] 00597 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00600 - [ 70 bytes] 00600 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00603 - [ 70 bytes] 00603 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00605 - [ 70 bytes] 00605 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00832 - [ 70 bytes] 00832 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 00939 - [ 70 bytes] 00939 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 01065 - [ 70 bytes] 01065 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 01097 - [ 70 bytes] 01097 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 01142 - [ 70 bytes] 01142 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 01224 - [ 70 bytes] 01224 (0000, "12345678")             [  200 ms] SHUTDOWN
+E - 02977 - [ 70 bytes] 02977 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 02977 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03181 - [ 70 bytes] 03181 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03181 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03286 - [ 70 bytes] 03286 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03286 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03358 - [ 70 bytes] 03358 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03358 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03432 - [ 70 bytes] 03432 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03432 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03588 - [ 70 bytes] 03588 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03588 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 03754 - [ 70 bytes] 03754 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03754 - [ 12 bytes] 0000   CREATE           OK
+E - 03767 - [ 70 bytes] 03767 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03767 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03769 - [ 70 bytes] 03769 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03769 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03771 - [ 70 bytes] 03771 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03771 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03774 - [ 70 bytes] 03774 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03774 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03775 - [ 70 bytes] 03775 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03775 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03777 - [ 70 bytes] 03777 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03777 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03778 - [ 70 bytes] 03778 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03778 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03781 - [ 70 bytes] 03781 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03781 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03782 - [ 70 bytes] 03782 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03782 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03784 - [ 70 bytes] 03784 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03784 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03786 - [ 70 bytes] 03786 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03786 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03787 - [ 70 bytes] 03787 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03787 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03788 - [ 70 bytes] 03788 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03788 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03790 - [ 70 bytes] 03790 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 03790 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 03794 - [ 70 bytes] 03794 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 03794 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04134 - [ 70 bytes] 04134 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 04134 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04190 - [ 70 bytes] 04190 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 04190 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04222 - [ 70 bytes] 04222 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 04222 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04263 - [ 70 bytes] 04263 (0000, "12345678")             [ 2000 ms] SHUTDOWN
+R - 04263 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04326 - [ 70 bytes] 04326 (0000, "12345678")             [ 2000 ms] SHUTDOWN
+R - 04326 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04492 - [ 70 bytes] 04492 (0000, "12345678")             [ 2000 ms] SHUTDOWN
+R - 04492 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 04601 - [ 70 bytes] 04601 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04601 - [ 12 bytes] 0000   CREATE           OK
+E - 04609 - [ 70 bytes] 04609 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04609 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 04613 - [ 70 bytes] 04613 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04613 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 04627 - [ 70 bytes] 04627 (0000, "12345678")             [  200 ms] CREATE   0002       2222€ "password"
+R - 04627 - [ 12 bytes] 0000   CREATE           OK
+E - 04637 - [ 70 bytes] 04637 (0001, "password")             [  200 ms] BALANCE 
+R - 04637 - [ 20 bytes] 0001  BALANCE           OK       2222€
+E - 04657 - [ 70 bytes] 04657 (0002, "password")             [20000 ms] BALANCE 
+E - 04687 - [ 70 bytes] 04687 (0002, "password")             [20000 ms] TRANSFER 0002        200€
+E - 04713 - [ 70 bytes] 04713 (0000, "12345678")             [  200 ms] CREATE   0002       2222€ "password"
+R - 04713 - [ 12 bytes] 0000   CREATE           OK
+E - 04725 - [ 70 bytes] 04725 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04725 - [ 12 bytes] 0000   CREATE           OK
+E - 04797 - [ 70 bytes] 04797 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04797 - [ 12 bytes] 0000   CREATE           OK
+E - 04806 - [ 70 bytes] 04806 (0000, "12345678")             [  200 ms] CREATE   0002       2222€ "password"
+R - 04806 - [ 12 bytes] 0000   CREATE           OK
+E - 04821 - [ 70 bytes] 04821 (0002, "password")             [20000 ms] TRANSFER 0002        200€
+E - 04861 - [ 70 bytes] 04861 (0002, "password")             [20000 ms] TRANSFER 0002        200€
+E - 04863 - [ 70 bytes] 04863 (0002, "password")             [20000 ms] TRANSFER 0001        222€
+E - 04901 - [ 70 bytes] 04901 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+E - 04907 - [ 70 bytes] 04907 (0002, "password")             [ 2000 ms] TRANSFER 0002        200€
+E - 04941 - [ 70 bytes] 04941 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 04941 - [ 12 bytes] 0000   CREATE           OK
+E - 04949 - [ 70 bytes] 04949 (0000, "12345678")             [  200 ms] CREATE   0002       2222€ "password"
+R - 04949 - [ 12 bytes] 0000   CREATE           OK
+E - 04969 - [ 70 bytes] 04969 (0002, "password")             [ 5000 ms] TRANSFER 0001        200€
+R - 04969 - [ 20 bytes] 0002 TRANSFER           OK       2422€
+E - 05000 - [ 70 bytes] 05000 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 05000 - [ 20 bytes] 0002 TRANSFER           OK       2644€
+E - 05013 - [ 70 bytes] 05013 (0002, "password")             [ 5000 ms] TRANSFER 0001        200€
+E - 05018 - [ 70 bytes] 05018 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 05013 - [ 20 bytes] 0002 TRANSFER           OK       2844€
+E - 05147 - [ 70 bytes] 05147 (0002, "password")             [ 5000 ms] TRANSFER 0001        200€
+E - 05149 - [ 70 bytes] 05149 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 05147 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        200€
+E - 05178 - [ 70 bytes] 05178 (0002, "password")             [  200 ms] TRANSFER 0001        222€

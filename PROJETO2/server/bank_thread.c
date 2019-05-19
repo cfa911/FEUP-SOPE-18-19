@@ -25,58 +25,97 @@ void *bank_thread(void *args)
             sem_getvalue(&full, &sem_value);
             logSyncMechSem(fd, thread_id, SYNC_OP_SEM_WAIT, SYNC_ROLE_CONSUMER, request.value.header.pid, sem_value);
             logSyncMechSem(STDOUT_FILENO, thread_id, SYNC_OP_SEM_WAIT, SYNC_ROLE_CONSUMER, request.value.header.pid, sem_value);
+
             request = q.front->data;
-            //usleep(request.value.header.op_delay_ms);
-            pop(&q);
-
-            memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
-            //open fifo_user
-            sprintf(fifo_user_name, "/tmp/secure_%d", request.value.header.pid); // int to string
-
-            fifo_user = open(fifo_user_name, O_WRONLY);
-
-            reply = process_reply(request);
-            if (fifo_user < 0)
+            int id1, id2;
+            int mutex_return_1, mutex_return_2;
+            id1 = request.value.header.account_id;
+            if (request.type == OP_TRANSFER)
             {
-                printf("Error: Failed to open user fifo user: %s\n", fifo_user_name);
-                reply.value.header.ret_code = RC_USR_DOWN;
-                //USR_DOWN
+                id2 = request.value.create.account_id;
             }
-            //process request
-            logDelay(fd, thread_id, request.value.header.op_delay_ms);
-            logDelay(STDOUT_FILENO, thread_id, request.value.header.op_delay_ms);
 
-            sleep(request.value.header.op_delay_ms / 1000); //MAKES DELAY IN MS
-            //usleep(request.value.header.op_delay_ms); //MAKES DELAY IN MS
-
-            ret_code = reply.value.header.ret_code;
-            operation = reply.type;
-            if (ret_code == RC_OK)
+            mutex_return_1 = pthread_mutex_trylock(&mutex[id1]);
+            logSyncMech(fd, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            if (request.value.header.account_id == ADMIN_ACCOUNT_ID)
+                mutex_return_1 = 0;
+            if (request.type == OP_TRANSFER)
             {
-                switch (operation)
+                mutex_return_2 = pthread_mutex_lock(&mutex[id2]);
+                logSyncMech(fd, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            }
+            if ((mutex_return_1 == 0 && request.type != OP_TRANSFER) || (mutex_return_1 == 0 && mutex_return_2 == 0 && request.type == OP_TRANSFER))
+            {
+                //CRITICAL SECTION
+
+                logSyncMech(fd, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                if (request.type == OP_TRANSFER)
                 {
-                case OP_CREATE_ACCOUNT:
-                    create_account(request, thread_id, &fd);
-                    break;
-                case OP_BALANCE:
-                    break;
-                case OP_TRANSFER:
-                    make_transfer(request, thread_id, &fd);
-                    break;
-                case OP_SHUTDOWN:
-                    server_shutdown(request, thread_id, &fd);
-                    unlink(SERVER_FIFO_PATH);
-                    break;
-
-                default:
-                    break;
+                    logSyncMech(fd, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                    logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_LOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
                 }
+                //usleep(request.value.header.op_delay_ms);
+                pop(&q);
+
+                memset(fifo_user_name, 0, USER_FIFO_PATH_LEN);
+                //open fifo_user
+                sprintf(fifo_user_name, "/tmp/secure_%d", request.value.header.pid); // int to string
+
+                fifo_user = open(fifo_user_name, O_WRONLY);
+
+                reply = process_reply(request);
+                if (fifo_user < 0)
+                {
+                    printf("Error: Failed to open user fifo user: %s\n", fifo_user_name);
+                    reply.value.header.ret_code = RC_USR_DOWN;
+                    //USR_DOWN
+                }
+                //process request
+                logDelay(fd, thread_id, request.value.header.op_delay_ms);
+                logDelay(STDOUT_FILENO, thread_id, request.value.header.op_delay_ms);
+
+                sleep(request.value.header.op_delay_ms / 1000); //MAKES DELAY IN MS
+                //usleep(request.value.header.op_delay_ms); //MAKES DELAY IN MS
+
+                ret_code = reply.value.header.ret_code;
+                operation = reply.type;
+                if (ret_code == RC_OK)
+                {
+                    switch (operation)
+                    {
+                    case OP_CREATE_ACCOUNT:
+                        create_account(request, thread_id, &fd);
+                        break;
+                    case OP_BALANCE:
+                        break;
+                    case OP_TRANSFER:
+                        make_transfer(request, thread_id, &fd);
+                        break;
+                    case OP_SHUTDOWN:
+                        server_shutdown(request, thread_id, &fd);
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+                if (reply.value.header.ret_code != RC_USR_DOWN)
+                    write(fifo_user, &reply, sizeof reply);
+
+                close(fifo_user);
             }
-            if (reply.value.header.ret_code != RC_USR_DOWN)
-                write(fifo_user, &reply, sizeof reply);
-
-            close(fifo_user);
-
+            pthread_mutex_unlock(&mutex[id1]);
+            logSyncMech(fd, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            if (request.type == OP_TRANSFER)
+            {
+                pthread_mutex_unlock(&mutex[id2]);
+                logSyncMech(fd, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            }
             sem_post(&empty);
             sem_getvalue(&empty, &sem_value);
             logSyncMechSem(fd, thread_id, SYNC_OP_SEM_POST, SYNC_ROLE_CONSUMER, request.value.header.pid, sem_value);
@@ -116,8 +155,11 @@ void create_account(tlv_request_t request, int thread_id, int *fd)
     logAccountCreation(STDOUT_FILENO, thread_id, account);
 
     pthread_mutex_init(&(mutex[id]), NULL);
-    pthread_mutex_lock(&(mutex[id]));
-
+    logSyncMech(*fd, thread_id, SYNC_OP_SEM_INIT, SYNC_ROLE_CONSUMER, request.value.header.pid);
+    logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_SEM_INIT, SYNC_ROLE_CONSUMER, request.value.header.pid);
+    pthread_mutex_unlock(&(mutex[id]));
+    logSyncMech(*fd, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+    logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
 }
 void make_transfer(tlv_request_t request, int thread_id, int *fd)
 {
