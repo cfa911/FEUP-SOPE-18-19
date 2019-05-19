@@ -203,3 +203,31 @@ E - 05147 - [ 70 bytes] 05147 (0002, "password")             [ 5000 ms] TRANSFER
 E - 05149 - [ 70 bytes] 05149 (0002, "password")             [  200 ms] TRANSFER 0001        222€
 R - 05147 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        200€
 E - 05178 - [ 70 bytes] 05178 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+E - 06811 - [ 70 bytes] 06811 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06811 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06814 - [ 70 bytes] 06814 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06814 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06816 - [ 70 bytes] 06816 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06816 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06817 - [ 70 bytes] 06817 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06817 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06819 - [ 70 bytes] 06819 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06819 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06821 - [ 70 bytes] 06821 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06821 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06823 - [ 70 bytes] 06823 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06823 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06824 - [ 70 bytes] 06824 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06824 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06830 - [ 70 bytes] 06830 (0002, "password")             [  200 ms] TRANSFER 0001        222€
+R - 06830 - [ 20 bytes] 0002 TRANSFER ID_NOT_FOUND        222€
+E - 06832 - [ 70 bytes] 06832 (0000, "12345678")             [  200 ms] CREATE   0001       2222€ "password"
+R - 06832 - [ 12 bytes] 0000   CREATE           OK
+E - 06840 - [ 70 bytes] 06840 (0000, "12345678")             [  200 ms] CREATE   0002       2222€ "password"
+R - 06840 - [ 12 bytes] 0000   CREATE           OK
+E - 06848 - [ 70 bytes] 06848 (0000, "12345678")             [ 2000 ms] CREATE   0002       2222€ "password"
+R - 06848 - [ 12 bytes] 0000   CREATE    ID_IN_USE
+E - 07011 - [ 70 bytes] 07011 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 07011 - [ 20 bytes] 0000 SHUTDOWN           OK 0
+E - 07045 - [ 70 bytes] 07045 (0000, "12345678")             [  200 ms] SHUTDOWN
+R - 07045 - [ 20 bytes] 0000 SHUTDOWN           OK 0

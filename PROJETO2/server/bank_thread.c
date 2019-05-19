@@ -107,9 +107,12 @@ void *bank_thread(void *args)
 
                 close(fifo_user);
             }
-            pthread_mutex_unlock(&mutex[id1]);
-            logSyncMech(fd, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
-            logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            if (id1 != ADMIN_ACCOUNT_ID)
+            {
+                pthread_mutex_unlock(&mutex[id1]);
+                logSyncMech(fd, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+                logSyncMech(STDOUT_FILENO, thread_id, SYNC_OP_MUTEX_UNLOCK, SYNC_ROLE_CONSUMER, request.value.header.pid);
+            }
             if (request.type == OP_TRANSFER)
             {
                 pthread_mutex_unlock(&mutex[id2]);
