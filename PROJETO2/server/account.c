@@ -213,7 +213,10 @@ tlv_reply_t request_server_shutdown(tlv_request_t request)
   {
     header.ret_code = RC_OTHER;
   }
-  shutdown.active_offices; // TODO:HOW?? GET FROM SEMAPHORE??
+  int i;
+  sem_getvalue(&full, &i);
+
+  shutdown.active_offices = i;
 
   value.header = header;
   value.shutdown = shutdown;
@@ -221,40 +224,4 @@ tlv_reply_t request_server_shutdown(tlv_request_t request)
   reply.value = value;
   reply.length = sizeof reply;
   return reply;
-}
-
-void create_account(tlv_request_t request)
-{
-  bank_account_t new_account;
-  int id = new_account.account_id = request.value.create.account_id;
-
-  new_account.balance = request.value.create.balance;
-  char *password = request.value.create.password;
-
-  char *a = hashing_func(password);
-  char hash[HASH_LEN + 1];
-  char salt[SALT_LEN + 1];
-
-  char *tmp;
-  tmp = strtok(a, " ");
-  strcpy(salt, tmp);
-  tmp = strtok(NULL, " ");
-  strcpy(hash, tmp);
-
-  strcpy(new_account.salt, salt);
-  strcpy(new_account.hash, hash);
-  accounts[id] = new_account;
-}
-void make_transfer(tlv_request_t request)
-{
-  int id1 = request.value.header.account_id;
-  int id2 = request.value.transfer.account_id;
-  int amount = request.value.transfer.amount;
-  accounts[id2].balance += amount;
-  accounts[id1].balance -= amount;
-}
-void server_shutdown(tlv_request_t request)
-{
-  chmod(SERVER_FIFO_PATH, S_IRUSR | S_IRGRP | S_IROTH);
-  CLOSE_FIFO_SERVER = 1;
 }

@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  int fifo_user = open(USER_FIFO_PATH, O_RDONLY);
+  int fifo_user = open(USER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
 
   switch (atoi(argv[__OP_MAX_NUMBER]))
   {

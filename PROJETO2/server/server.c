@@ -1,14 +1,18 @@
 #include "server.h"
 #include "../log.c"
 
+arg_struct_t args[MAX_BANK_OFFICES];
+pthread_t threads[MAX_BANK_OFFICES];
+
 int main(int argc, char *argv[])
 {
 
   int fifo_server;
   CLOSE_FIFO_SERVER = 0;
   init(&q); // STARTS THE QUEUE
-
   // CHAIN OF REQUIREMENTS
+  int fd = open(SERVER_LOGFILE, O_WRONLY | O_APPEND);
+
   if (argc != 3)
   {
     printf("Wrong number of arguments\n");
@@ -57,7 +61,8 @@ int main(int argc, char *argv[])
   strcpy(admin_account.salt, saltes); //the Salt
 
   accounts[ADMIN_ACCOUNT_ID] = admin_account; //SET ADMIN ACCOUNT TO POSX 0
-
+  pthread_mutex_init(&(mutex[ADMIN_ACCOUNT_ID]), NULL);
+  pthread_mutex_lock(&(mutex[ADMIN_ACCOUNT_ID]));
   //criar fifo secure_srv
   if (mkfifo(SERVER_FIFO_PATH, 0660) != 0)
   {
@@ -65,7 +70,7 @@ int main(int argc, char *argv[])
     unlink(SERVER_FIFO_PATH);
     return -3;
   }
-  fifo_server = open(SERVER_FIFO_PATH, O_RDONLY);
+  fifo_server = open(SERVER_FIFO_PATH, O_RDONLY | O_NONBLOCK);
   if (fifo_server == -1)
   {
     printf("Error opening FIFO. \n");
@@ -74,78 +79,51 @@ int main(int argc, char *argv[])
   struct tlv_request request;
 
   sem_init(&empty, SHARED, atoi(argv[1])); /* sem empty = atoi(argv[1]) */
+  logSyncMechSem(fd, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid(), atoi(argv[1]));
+  logSyncMechSem(STDOUT_FILENO, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid(), atoi(argv[1]));
 
   sem_init(&full, SHARED, 0); /* sem full = 0  */
+  logSyncMechSem(fd, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid(), 0);
+  logSyncMechSem(STDOUT_FILENO, MAIN_THREAD_ID, SYNC_OP_SEM_INIT, SYNC_ROLE_PRODUCER, getpid(), 0);
 
-  pthread_t threads[MAX_BANK_OFFICES];
-
-  for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
+  for (int i = 1; i <= atoi(argv[1]); i++)
   {
-    pthread_t tid;
-    if (pthread_create(&tid, NULL, bank_thread, &i) != 0)
+    args[i].id = i;
+    usleep(2);
+    if (pthread_create(&threads[i], NULL, &bank_thread, &args[i]))
     {
       printf("Error creating bank offices");
       exit(1);
     }
-    threads[i] = tid;
   }
   while (!CLOSE_FIFO_SERVER) //TILL SHUTDOWN
   {
     if (read(fifo_server, &request, sizeof(request)) > 0)
     {
-
-      //put request in queue;
-      
-      sem_wait(&empty);
-      //usleep(10);
       push(&q, request);
-      printf("Pushes request %d\n",request.value.header.pid);
+      int sem_value;
+
       sem_post(&full);
+      sem_getvalue(&full, &sem_value);
+      logSyncMechSem(fd, 0, SYNC_OP_SEM_WAIT, SYNC_ROLE_PRODUCER, request.value.header.pid, sem_value);
+      logSyncMechSem(STDOUT_FILENO, 0, SYNC_OP_SEM_WAIT, SYNC_ROLE_PRODUCER, request.value.header.pid, sem_value);
 
-
+      sem_wait(&empty);
+      sem_getvalue(&full, &sem_value);
+      logSyncMechSem(fd, 0, SYNC_OP_SEM_POST, SYNC_ROLE_PRODUCER, request.value.header.pid, sem_value);
+      logSyncMechSem(STDOUT_FILENO, 0, SYNC_OP_SEM_POST, SYNC_ROLE_PRODUCER, request.value.header.pid, sem_value);
     }
   }
-  /*
-  for (size_t i = 0; i < atoi(argv[1]); i++) // creates threads/balcoes eletronicos
+
+  for (int i = 1; i <= atoi(argv[1]); i++) // deletes threads/balcoes eletronicos
   {
-    if (pthread_join(threads[i], NULL) != 0)
-    {
-      printf("Error Waiting fort bank offices");
-      exit(1);
-    }
-    else
-    {
-     printf("THREAD N %i: CLOSED\n",i);
-    }
-    
+    pthread_join(threads[i], NULL);
+    usleep(1);
   }
-*/
+
   close(fifo_server);
+  close(fd);
   unlink(SERVER_FIFO_PATH);
-
-  // int slog = open(SERVER_LOGFILE, O_WRONLY | O_CREAT | O_APPEND, 0664);
-
-  // if(slog < 0){
-  //   perror("Error opening user log file!\n");
-  //   exit(0);
-  // }
-
-  // const tlv_reply_t* tlv_reply_ptr;
-  // tlv_reply_ptr = &reply;
-  // const tlv_request_t* tlv_request_ptr;
-  // tlv_request_ptr = &request;
-
-  // int saved_stdout = dup(STDOUT_FILENO);
-  // dup2(slog, STDOUT_FILENO);
-
-  // logRequest(fifo_user, getpid(), tlv_request_ptr);
-  // logReply(fifo_user, getpid(), tlv_reply_ptr);
-
-  // close(slog);
-
-  // dup2(saved_stdout, STDOUT_FILENO);
-  // close(saved_stdout);
-
   return 0;
 }
 

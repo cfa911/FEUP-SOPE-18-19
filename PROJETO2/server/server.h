@@ -1,12 +1,13 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
-
 #include "../constants.h"
 #include "../types.h"
 #include "bank_thread.h"
 #include "account.h"
 #include "queue.h"
+#include "../sope.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,16 +24,21 @@
 
 #define SHARED 0
 
-
-void print_usage(FILE * stream, char * progname);
+void print_usage(FILE *stream, char *progname);
 bool account_exists(tlv_request_t request);
 bool check_hash(char *password, char *salt, char *desired_hash);
 void sigint_handler(int sig);
 char *hashing_func(char *password);
 
 bank_account_t accounts[MAX_BANK_ACCOUNTS];
+pthread_mutex_t mutex[MAX_BANK_ACCOUNTS];
 struct Queue q; //queue struct
-sem_t empty, full; 
+sem_t empty, full;
 int CLOSE_FIFO_SERVER;
 
-#endif  // _SERVER_H_
+typedef struct arg_struct
+{
+    int id;
+} arg_struct_t;
+
+#endif // _SERVER_H_

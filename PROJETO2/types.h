@@ -171,9 +171,3 @@ typedef struct tlv_reply {
   uint32_t length;
   rep_value_t value;
 } __attribute__((packed)) tlv_reply_t;
-
-
-typedef struct related_mutex {
-  uint32_t account_id;
-  pthread_mutex_t mymutex;
-} related_mutex_t;
