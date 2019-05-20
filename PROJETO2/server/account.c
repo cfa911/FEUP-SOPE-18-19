@@ -181,7 +181,6 @@ tlv_reply_t request_make_transfer(tlv_request_t request)
   value.transfer = transfer;
   reply.value = value;
   reply.length = sizeof(reply);
-  //TODO:RC_OTHER erro não especificado
 
   return reply;
 }
